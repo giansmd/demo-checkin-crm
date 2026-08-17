@@ -645,6 +645,10 @@
       display: none;
     }
 
+    .widget.wide {
+      grid-column: 1 / -1;
+    }
+
     .widget h3 {
       font-family: 'Inter', sans-serif;
       font-size: 15.5px;
@@ -1286,7 +1290,7 @@
               <p class="panel-sub">En Evaluación (espera) vs. Aceptadas, por línea de negocio</p>
               <div class="chart-wrap"><canvas id="chartPipeline"></canvas></div>
             </div>
-            <div class="widget" data-w="tendencia">
+            <div class="widget wide" data-w="tendencia">
               <h3>Tendencia de Cierre</h3>
               <p class="panel-sub">Propuestas por mes y su tasa de aceptación</p>
               <div class="chart-wrap"><canvas id="chartTendencia"></canvas></div>
@@ -1686,13 +1690,30 @@ function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.da
         [{ label: 'Cerrado (Aceptadas)', data: cerrV, color: COLORS.primary }, { label: 'Pipeline (En Evaluación)', data: pipeV, color: COLORS.primaryLight }],
         { yMoney: true });
 
-      // TENDENCIA MENSUAL
-      const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Dic'];
-      const tot = Array(12).fill(0), ac = Array(12).fill(0);
-      d.forEach(x => { if (!x.fecha_creacion_lead) return; const mo = new Date(x.fecha_creacion_lead).getMonth(); tot[mo]++; if (isAcept(st(x))) ac[mo]++; });
-      drawLine('chartTendencia', meses,
-        [{ label: 'Propuestas', data: tot, color: COLORS.primary, fill: true },
-        { label: 'Aceptadas', data: ac, color: COLORS.green, fill: true }]);
+      // TENDENCIA MENSUAL (rango real en meses, soporta múltiples años)
+      const MES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Dic'];
+      const fechasTs = d.map(x => x.fecha_creacion_lead).filter(Boolean).map(s => new Date(s + 'T00:00:00').getTime());
+      let minD = fechasTs.length ? new Date(Math.min(...fechasTs)) : new Date(new Date().getFullYear(), 0, 1);
+      let maxD = fechasTs.length ? new Date(Math.max(...fechasTs)) : new Date(new Date().getFullYear(), 11, 1);
+      if (state.from) minD = new Date(state.from + 'T00:00:00');
+      if (state.to) maxD = new Date(state.to + 'T00:00:00');
+      const buckets = [];
+      const cur = new Date(minD.getFullYear(), minD.getMonth(), 1);
+      const end = new Date(maxD.getFullYear(), maxD.getMonth(), 1);
+      while (cur <= end) {
+        buckets.push({ label: MES[cur.getMonth()] + " '" + String(cur.getFullYear()).slice(2) });
+        cur.setMonth(cur.getMonth() + 1);
+      }
+      const totT = buckets.map(() => 0), acT = buckets.map(() => 0);
+      d.forEach(x => {
+        if (!x.fecha_creacion_lead) return;
+        const dt = new Date(x.fecha_creacion_lead + 'T00:00:00');
+        const idx = (dt.getFullYear() - minD.getFullYear()) * 12 + (dt.getMonth() - minD.getMonth());
+        if (idx >= 0 && idx < buckets.length) { totT[idx]++; if (isAcept(st(x))) acT[idx]++; }
+      });
+      drawLine('chartTendencia', buckets.map(b => b.label),
+        [{ label: 'Propuestas', data: totT, color: COLORS.primary, fill: true },
+        { label: 'Aceptadas', data: acT, color: COLORS.green, fill: true }]);
     }
 
     function drawBar(id, labels, datasets, opt = {}) {
