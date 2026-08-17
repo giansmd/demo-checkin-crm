@@ -1,0 +1,11 @@
+.git
+node_modules
+*.docx
+*.pdf
+*.xlsx
+*.csv
+data.json
+checkin-crm-mock.html
+dashboard_checkin_casa.html
+README.md
+.DS_Store

@@ -1,0 +1,2299 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check In · CRM Comercial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --ink: #1A2A36;
+      --ink-soft: #5B6873;
+      --paper: #F7F8FA;
+      --surface: #FFFFFF;
+      --line: #E2E8F0;
+      --primary: #0969DA;
+      --primary-700: #0B4FA3;
+      --primary-soft: #E5F1FC;
+      --primary-light: #3B82C4;
+      --primary-lighter: #9DC0E8;
+      --green: #1A7F37;
+      --green-soft: #E2F4E8;
+      --red: #C0392B;
+      --red-soft: #FBE7E5;
+      --gray: #5B6873;
+      --gray-soft: #EDF1F5;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .mono {
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .display {
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ---------- LOGIN ---------- */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(var(--line) 1px, transparent 1px) 0 0/40px 40px,
+        linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0/40px 40px, var(--paper);
+      padding: 24px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 38px 36px;
+      position: relative;
+      box-shadow: 0 30px 60px -30px rgba(28, 43, 51, .18);
+    }
+
+    .stamp {
+      position: absolute;
+      top: 23px;
+      right: 23px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .5px;
+      color: var(--primary);
+      transform: translate(-50%, -50%);
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .brand-mark .sq {
+      width: 30px;
+      height: 30px;
+      background: var(--ink);
+      border-radius: 6px;
+      position: relative;
+      flex: none;
+    }
+
+    .brand-mark .sq::after {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border: 1.5px solid var(--paper);
+      border-radius: 2px;
+    }
+
+    .brand-mark .name {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .brand-mark .name span {
+      color: var(--primary);
+    }
+
+    .logo {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      object-fit: cover;
+      display: block;
+      background: #fff;
+    }
+
+    .side-brand .logo {
+      width: 26px;
+      height: 26px;
+    }
+
+    .login-card h1 {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 24px;
+      margin: 0 0 6px;
+    }
+
+    .login-card p.sub {
+      color: var(--ink-soft);
+      font-size: 13.5px;
+      margin: 0 0 24px;
+      line-height: 1.5;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .field select,
+    .field input {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .field select:focus,
+    .field input:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: 1px;
+      border-color: var(--primary);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--ink);
+      color: var(--paper);
+      border: none;
+      border-radius: 7px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .login-btn:hover {
+      background: #0f1a20;
+    }
+
+    .login-note {
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--gray);
+      text-align: center;
+    }
+
+    /* ---------- APP ---------- */
+    #app {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 232px 1fr;
+      min-height: 100vh;
+      align-items: start;
+    }
+
+    .sidebar {
+      background: var(--ink);
+      color: #DCE3E2;
+      padding: 22px 16px;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: 1px;
+      background: repeating-linear-gradient(to bottom, var(--primary) 0 4px, transparent 4px 12px);
+      opacity: .5;
+    }
+
+    .side-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px 24px;
+    }
+
+    .side-brand .sq {
+      width: 26px;
+      height: 26px;
+      background: var(--primary);
+      border-radius: 6px;
+      flex: none;
+    }
+
+    .side-brand .name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .side-brand .name span {
+      display: block;
+      font-size: 10px;
+      font-weight: 400;
+      color: #9FB0AC;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    .side-section {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #9FB0AC;
+      padding: 14px 12px 6px;
+      font-weight: 600;
+    }
+
+    nav.side-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 7px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #B9C6C4;
+      cursor: pointer;
+      border: none;
+      background: none;
+      text-align: left;
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .nav-item svg {
+      width: 16px;
+      height: 16px;
+      flex: none;
+      opacity: .85;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, .06);
+      color: #fff;
+    }
+
+    .nav-item.active {
+      background: rgba(9, 105, 218, .22);
+      color: #fff;
+    }
+
+    .nav-item.active svg {
+      opacity: 1;
+      color: var(--primary);
+    }
+
+    .side-foot {
+      margin-top: auto;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, .1);
+    }
+
+    .role-switch {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .role-switch button {
+      flex: 1;
+      padding: 7px;
+      border-radius: 7px;
+      border: 1px solid rgba(255, 255, 255, .15);
+      background: none;
+      color: #B9C6C4;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .role-switch button.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .side-user {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 6px 8px;
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex: none;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .side-user .u-name {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .side-user .u-role {
+      font-size: 10.5px;
+      color: #9FB0AC;
+    }
+
+    .main {
+      padding: 26px 34px 60px;
+      overflow-x: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .topbar h2 {
+      font-family: 'Inter', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .topbar .eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--paper);
+      border: none;
+      padding: 10px 18px;
+      border-radius: 7px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-primary:hover {
+      background: #0f1a20;
+    }
+
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 9px 16px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-ghost:hover {
+      background: var(--gray-soft);
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    /* KPI cards (dashboard component, mock visuals) */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .kpi-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .kpi-icon.blue {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .kpi-icon.green {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .kpi-icon.amber {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .kpi-icon.red {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .kpi-icon.purple {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .kpi-icon.teal {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .kpi-badge {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .kpi-badge.neutral {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .kpi-badge.up {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .kpi-badge.down {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .kpi-value {
+      font-family: 'Inter', sans-serif;
+      font-size: 27px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      margin: 2px 0 3px;
+    }
+
+    .kpi-label {
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    .kpi-sub {
+      font-size: 11.5px;
+      color: var(--ink-soft);
+      margin-top: 4px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .grid-2b {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+    }
+
+    .panel h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 15.5px;
+      font-weight: 600;
+      margin: 0 0 2px;
+    }
+
+    .panel .panel-sub {
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin: 0 0 14px;
+    }
+
+    .chart-wrap {
+      height: 240px;
+      position: relative;
+    }
+
+    /* Filters / toolbar */
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .toolbar select,
+    .toolbar input {
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--surface);
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      color: var(--ink);
+    }
+
+    .widgets {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .widget {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+    }
+
+    .widget.hidden {
+      display: none;
+    }
+
+    .widget h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 15.5px;
+      font-weight: 600;
+      margin: 0 0 2px;
+    }
+
+    .widget .panel-sub {
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin: 0 0 14px;
+    }
+
+    .toggle-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .toggle-row label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 6px 11px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .toggle-row input {
+      accent-color: var(--primary);
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    thead th {
+      text-align: left;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--ink-soft);
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #F6F4EE;
+      font-weight: 700;
+    }
+
+    tbody td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: #FAF9F5;
+    }
+
+    td.num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .badge.aceptada {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .badge.espera {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .badge.rechazada {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .badge.emitida {
+      background: var(--gray-soft);
+      color: var(--gray);
+    }
+
+    .badge.contacto {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .p-name {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .p-sub {
+      font-size: 11.5px;
+      color: var(--ink-soft);
+      margin-top: 2px;
+    }
+
+    /* Clientes */
+    .client-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .client-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+
+    .client-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .client-top .c-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 9px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 700;
+      font-size: 13px;
+      flex: none;
+    }
+
+    .client-top .c-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .client-top .c-sub {
+      font-size: 11.5px;
+      color: var(--ink-soft);
+    }
+
+    .client-stats {
+      display: flex;
+      gap: 18px;
+      margin: 12px 0;
+      padding: 12px 0;
+      border-top: 1px dashed var(--line);
+      border-bottom: 1px dashed var(--line);
+    }
+
+    .client-stats div {
+      font-size: 11px;
+      color: var(--ink-soft);
+    }
+
+    .client-stats strong {
+      display: block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 15px;
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .client-hist {
+      font-size: 12px;
+      color: var(--ink-soft);
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+
+    .client-hist span.st {
+      font-weight: 600;
+    }
+
+    /* Date filter (shared) */
+    .date-filter {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      flex-wrap: wrap;
+    }
+
+    .date-filter .df-label {
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      font-size: 11px;
+    }
+
+    .date-filter input[type=date] {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    .date-filter .df-sep {
+      color: var(--line);
+    }
+    .df-preset {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+
+    /* Cliente -> propuestas (detalle bajo la fila) */
+    .prop-row td {
+      background: #F7F9FB;
+      padding: 0 14px 16px !important;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .prop-mini {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .prop-mini thead th {
+      background: #EEF3F8;
+      color: var(--ink-soft);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      text-align: left;
+      padding: 8px 12px;
+      font-weight: 700;
+    }
+
+    .prop-mini tbody td {
+      padding: 8px 12px;
+      font-size: 12px;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    .prop-mini {
+      table-layout: fixed;
+    }
+
+    .prop-mini th,
+    .prop-mini td {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .prop-mini tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .prop-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .prop-actions button {
+      padding: 4px 8px;
+      font-size: 11px;
+    }
+
+    tbody tr.client-main {
+      cursor: pointer;
+    }
+
+    tbody tr.client-main:hover {
+      background: #FAF9F5;
+    }
+
+    .prop-empty {
+      padding: 10px 12px 2px;
+      font-size: 12px;
+      color: var(--ink-soft);
+      font-style: italic;
+    }
+
+    /* Combined form helpers + collapse toggle */
+    .form-sep {
+      margin: 18px 0 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--ink-soft);
+      font-weight: 600;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+    }
+
+    .grid-2f {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .btn-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--primary);
+      font-size: 13px;
+      padding: 2px 4px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    @media(max-width:560px) {
+      .grid-2f {
+        grid-template-columns: 1fr;
+      }
+      .modal-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(26, 42, 54, .45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 26px 28px;
+      width: 100%;
+      max-width: 820px;
+      max-height: 90vh;
+      overflow: auto;
+      box-shadow: 0 30px 60px -30px rgba(28, 43, 51, .3);
+    }
+
+    .modal h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      margin: 0 0 16px;
+    }
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+    .modal-col {
+      min-width: 0;
+    }
+
+    /* Usuarios */
+    .user-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .user-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .user-card .u-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 700;
+      font-size: 14px;
+      flex: none;
+    }
+
+    .user-card .u-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .user-card .u-mail {
+      font-size: 11.5px;
+      color: var(--ink-soft);
+    }
+
+    .role-pill {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 20px;
+      margin-top: 6px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .role-pill.admin {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .role-pill.seller {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .user-metrics {
+      display: flex;
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .user-metrics div {
+      font-size: 11px;
+      color: var(--ink-soft);
+    }
+
+    .user-metrics strong {
+      display: block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .note {
+      font-size: 12px;
+      color: var(--ink-soft);
+      background: var(--gray-soft);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width:900px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .grid-2,
+      .grid-2b,
+      .client-grid,
+      .user-grid,
+      .widgets {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOGIN -->
+  <div id="login-screen">
+    <div class="login-card">
+      <div class="brand-mark">
+        <img src="logo-checkincasa.jpeg" class="logo" alt="Check In Casa" style="width: 100%; height: 100%;">
+      </div>
+      <div class="name">Check In · CRM <span>Comercial</span></div>
+      <h1>Bienvenido</h1>
+      <p class="sub">Demo de gestión de propuestas con indicadores comerciales.</p>
+      <div class="field">
+        <label>Correo</label>
+        <input type="email" value="demo@checkincasa.pe">
+      </div>
+      <div class="field">
+        <label>Contraseña</label>
+        <input type="password" value="demo1234">
+      </div>
+      <div class="field">
+        <label>Rol</label>
+        <select id="loginRole">
+          <option value="admin">Administrador</option>
+          <option value="seller">Vendedor</option>
+        </select>
+      </div>
+      <div class="field" id="loginUserField" style="display:none">
+        <label>Vendedor</label>
+        <select id="loginUser"></select>
+      </div>
+      <button class="login-btn" onclick="doLogin()">Iniciar sesión</button>
+      <p class="login-note">Vista de demostración — datos embebidos (100 propuestas).</p>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app">
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="side-brand"><img src="logo-checkincasa.jpeg" class="logo" alt="Check In Casa">
+          <div class="name">Check In<span>CRM Comercial</span></div>
+        </div>
+        <nav class="side-nav">
+          <div class="side-section">Módulos</div>
+          <button class="nav-item active" onclick="showView('reportes',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="9" rx="1" />
+              <rect x="14" y="3" width="7" height="5" rx="1" />
+              <rect x="14" y="12" width="7" height="9" rx="1" />
+              <rect x="3" y="16" width="7" height="5" rx="1" />
+            </svg>Reportes</button>
+          <button class="nav-item" onclick="showView('clientes',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="8" r="3.2" />
+              <path d="M2.5 20c0-3.5 2.9-6 6.5-6s6.5 2.5 6.5 6" />
+              <circle cx="18" cy="8" r="2.4" />
+              <path d="M15.7 14.3c2.7.3 4.8 2.4 4.8 5.7" />
+            </svg>Clientes</button>
+          <button class="nav-item" onclick="showView('usuarios',this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>Usuarios</button>
+        </nav>
+        <div class="side-foot">
+          <div class="role-switch">
+            <button id="roleAdmin" class="active" onclick="setRole('admin')">Admin</button>
+            <button id="roleSeller" onclick="setRole('seller')">Vendedor</button>
+          </div>
+          <div class="side-user">
+            <div class="avatar" id="sideAvatar">AD</div>
+            <div>
+              <div class="u-name" id="sideName">Administrador</div>
+              <div class="u-role" id="sideRole">Acceso total</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+
+        <!-- ===== REPORTES ===== -->
+        <section id="view-reportes" class="view active">
+          <div class="topbar">
+            <div>
+              <div class="eyebrow">Panel general</div>
+              <h2>Reportes comerciales</h2>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="btn-ghost" onclick="toggleCustomize()">⚙ Personalizar</button>
+            </div>
+          </div>
+
+          <div class="date-filter">
+            <span class="df-label">Rango de fechas</span>
+            <input type="date" id="repFrom" onchange="onRangeChange('rep')">
+            <span class="df-sep">—</span>
+            <input type="date" id="repTo" onchange="onRangeChange('rep')">
+            <button class="btn-ghost df-preset" onclick="applyPreset('ytd')">YTD</button>
+            <button class="btn-ghost df-preset" onclick="applyPreset('qtd')">QTD</button>
+            <button class="btn-ghost df-preset" onclick="applyPreset('mtd')">MTD</button>
+            <button class="btn-ghost" style="padding:6px 12px;font-size:12px" onclick="clearRange()">Limpiar</button>
+          </div>
+
+          <div class="kpi-row" id="kpiRow"></div>
+
+          <div id="customizeBar" class="toggle-row" style="display:none"></div>
+
+          <div class="widgets" id="widgets">
+            <div class="widget" data-w="winvendor">
+              <h3>Win Rate por Vendedor</h3>
+              <p class="panel-sub">Rendimiento individual — (Aceptadas / Emitidas) × 100</p>
+              <div class="chart-wrap"><canvas id="chartWinVendor"></canvas></div>
+            </div>
+            <div class="widget" data-w="motivos">
+              <h3>Distribución de Motivos de Pérdida</h3>
+              <p class="panel-sub">Fuga de dinero — propuestas en estado "Rechazada/Perdida"</p>
+              <div class="chart-wrap"><canvas id="chartMotivos"></canvas></div>
+            </div>
+            <div class="widget" data-w="ticket">
+              <h3>Ticket Promedio por Línea de Negocio</h3>
+              <p class="panel-sub">Monto promedio por contrato aceptado, por categoría</p>
+              <div class="chart-wrap"><canvas id="chartTicket"></canvas></div>
+            </div>
+            <div class="widget" data-w="pipeline">
+              <h3>Pipeline Activo vs. Ingresos Cerrados</h3>
+              <p class="panel-sub">En Evaluación (espera) vs. Aceptadas, por línea de negocio</p>
+              <div class="chart-wrap"><canvas id="chartPipeline"></canvas></div>
+            </div>
+            <div class="widget" data-w="tendencia">
+              <h3>Tendencia de Cierre</h3>
+              <p class="panel-sub">Propuestas por mes y su tasa de aceptación</p>
+              <div class="chart-wrap"><canvas id="chartTendencia"></canvas></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== CLIENTES ===== -->
+        <section id="view-clientes" class="view">
+          <div class="topbar">
+            <div>
+              <div class="eyebrow">Maestro de clientes</div>
+              <h2>Clientes</h2>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <input id="fCliente" type="text" list="clientList" placeholder="Buscar cliente…" onkeyup="renderClientes()"
+                style="padding:9px 12px;border:1px solid var(--line);border-radius:7px;font-size:13px;font-family:'Inter'">
+              <datalist id="clientList"></datalist>
+              <select id="fEstadoProp" onchange="renderClientes()" style="padding:9px 12px;border:1px solid var(--line);border-radius:7px;font-size:13px;font-family:'Inter';background:var(--surface)">
+                <option value="">Todos los estados</option>
+                <option value="1. Contacto Inicial">1. Contacto Inicial</option>
+                <option value="2. Propuesta Enviada">2. Propuesta Enviada</option>
+                <option value="3. En Evaluación">3. En Evaluación</option>
+                <option value="4. Aceptada">4. Aceptada</option>
+                <option value="5. Rechazada/Perdida">5. Rechazada/Perdida</option>
+              </select>
+              <button class="btn-primary" onclick="openClientModal()">+ Nuevo cliente</button>
+            </div>
+          </div>
+
+          <div class="date-filter">
+            <span class="df-label">Rango de fechas</span>
+            <input type="date" id="cliFrom" onchange="onRangeChange('cli')">
+            <span class="df-sep">—</span>
+            <input type="date" id="cliTo" onchange="onRangeChange('cli')">
+            <button class="btn-ghost df-preset" onclick="applyPreset('ytd')">YTD</button>
+            <button class="btn-ghost df-preset" onclick="applyPreset('qtd')">QTD</button>
+            <button class="btn-ghost df-preset" onclick="applyPreset('mtd')">MTD</button>
+            <button class="btn-ghost" style="padding:6px 12px;font-size:12px" onclick="clearRange()">Limpiar</button>
+          </div>
+
+          <table id="clientTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Razón Social</th>
+                <th>Contacto</th>
+                <th>Correo</th>
+                <th>Propuestas</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="clientBody"></tbody>
+          </table>
+        </section>
+
+        <!-- MODAL CLIENTE + PROPUESTA -->
+        <div class="modal-overlay" id="clientModal" style="display:none">
+          <div class="modal">
+            <h3 id="clientModalTitle">Nuevo cliente y propuesta</h3>
+            <input type="hidden" id="cId">
+            <div class="form-sep">Datos del cliente</div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Razón Social *</label><input id="cRazon" placeholder="Edificaciones Modernas 9"></div>
+              <div class="field" style="margin-bottom:0"><label>Tipo de cliente</label><select id="cTipo"><option value="Persona Natural">Persona Natural</option><option value="Persona Jurídica">Persona Jurídica</option></select></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Nombre de contacto</label><input id="cContacto" placeholder="Andrea Montes"></div>
+              <div class="field" style="margin-bottom:0"><label>Correo electrónico</label><input id="cCorreo" placeholder="contacto@empresa.com"></div>
+            </div>
+            <div class="form-sep">Datos de la propuesta</div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Proyecto *</label><input id="pProyecto" placeholder="Residencial San Borja"></div>
+              <div class="field" style="margin-bottom:0"><label>Monto (S/)</label><input id="pMonto" type="number" placeholder="5000"></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Categoría servicio</label><select id="pCategoria"></select></div>
+              <div class="field" style="margin-bottom:0"><label>Sub-servicio</label><select id="pSub"></select></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Medio captación</label><select id="pMedio"></select></div>
+              <div class="field" style="margin-bottom:0"><label>Responsable comercial</label><select id="pResponsable"></select></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Estado</label><select id="pEstado"></select></div>
+              <div class="field" style="margin-bottom:0"><label>Motivo pérdida</label><select id="pMotivo"><option value="">—</option></select></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Fecha creación</label><input id="pFechaCreacion" type="date"></div>
+              <div class="field" style="margin-bottom:0"><label>Fecha emisión</label><input id="pFechaEmision" type="date"></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Fecha cierre</label><input id="pFechaCierre" type="date"></div>
+              <div></div>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px">
+              <button class="btn-ghost" onclick="closeClientModal()">Cancelar</button>
+              <button class="btn-primary" onclick="saveClient()">Guardar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL EDITAR PROPUESTA -->
+        <div class="modal-overlay" id="propModal" style="display:none">
+          <div class="modal">
+            <h3>Editar propuesta</h3>
+            <input type="hidden" id="pId">
+            <input type="hidden" id="pCid">
+            <div class="form-sep">Propuesta</div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Proyecto *</label><input id="p2Proyecto" placeholder="Residencial San Borja"></div>
+              <div class="field" style="margin-bottom:0"><label>Monto (S/)</label><input id="p2Monto" type="number" placeholder="5000"></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Categoría servicio</label><select id="p2Categoria"></select></div>
+              <div class="field" style="margin-bottom:0"><label>Sub-servicio</label><select id="p2Sub"></select></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Medio captación</label><select id="p2Medio"></select></div>
+              <div class="field" style="margin-bottom:0"><label>Responsable comercial</label><select id="p2Responsable"></select></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Estado</label><select id="p2Estado"></select></div>
+              <div class="field" style="margin-bottom:0"><label>Motivo pérdida</label><select id="p2Motivo"><option value="">—</option></select></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Fecha creación</label><input id="p2FechaCreacion" type="date"></div>
+              <div class="field" style="margin-bottom:0"><label>Fecha emisión</label><input id="p2FechaEmision" type="date"></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Fecha cierre</label><input id="p2FechaCierre" type="date"></div>
+              <div></div>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px">
+              <button class="btn-ghost" onclick="closePropModal()">Cancelar</button>
+              <button class="btn-primary" onclick="saveProposal()">Guardar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== USUARIOS ===== -->
+        <section id="view-usuarios" class="view">
+          <div class="topbar">
+            <div>
+              <div class="eyebrow">Accesos y roles</div>
+              <h2>Usuarios</h2>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="btn-primary" onclick="openUserModal()">+ Nuevo usuario</button>
+            </div>
+          </div>
+          <div class="note" id="usersNote"></div>
+          <table id="userTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="userBody"></tbody>
+          </table>
+        </section>
+
+        <!-- MODAL USUARIO -->
+        <div class="modal-overlay" id="userModal" style="display:none">
+          <div class="modal" style="max-width:520px">
+            <h3 id="userModalTitle">Nuevo usuario</h3>
+            <input type="hidden" id="uId">
+            <div class="field"><label>Nombre *</label><input id="uNombre" placeholder="Kelli Livora"></div>
+            <div class="field"><label>Correo electrónico</label><input id="uCorreo" placeholder="nombre@checkincasa.pe"></div>
+            <div class="field"><label>Rol</label><select id="uRol"><option value="admin">Administrador</option><option value="seller">Vendedor</option></select></div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px">
+              <button class="btn-ghost" onclick="closeUserModal()">Cancelar</button>
+              <button class="btn-primary" onclick="saveUser()">Guardar</button>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const DATA = [{ "id_cliente": "CLI-011", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Andrea Montes", "telefono": "966424438", "correo_electronico": "contacto10@empresa.com", "id_propuesta": "PROP-1037", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 1500, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-01-02", "fecha_emision_propuesta": "2025-01-04", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-02-03", "motivo_perdida": "" }, { "id_cliente": "CLI-013", "nombre_razon_social": "Constructora Paca 8", "nombre_contacto": "Fred Noa", "telefono": "911566712", "correo_electronico": "contacto12@empresa.com", "id_propuesta": "PROP-1097", "nombre_proyecto": "Casa Cieneguilla", "medio_captacion": "WhatsApp", "monto_final_cotizado": 8400, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.1 Elaboración Dossier", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-01-03", "fecha_emision_propuesta": "2025-01-06", "estado_propuesta": "1. Contacto Inicial", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-010", "nombre_razon_social": "Constructora S.A. 4", "nombre_contacto": "Rosa Valdivia", "telefono": "994243477", "correo_electronico": "contacto9@empresa.com", "id_propuesta": "PROP-1005", "nombre_proyecto": "Condominio El Sol", "medio_captacion": "Directorio", "monto_final_cotizado": 5000, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.2 Lev. Observaciones", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2025-01-04", "fecha_emision_propuesta": "2025-01-06", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-01-29", "motivo_perdida": "" }, { "id_cliente": "CLI-011", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Andrea Montes", "telefono": "966424438", "correo_electronico": "contacto10@empresa.com", "id_propuesta": "PROP-1081", "nombre_proyecto": "Casa Cieneguilla", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 1500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.3 Supervisión Acabados", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-01-05", "fecha_emision_propuesta": "2025-01-07", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-001", "nombre_razon_social": "Constructora S.A. 6", "nombre_contacto": "Carlos Mendoza", "telefono": "934627465", "correo_electronico": "contacto0@empresa.com", "id_propuesta": "PROP-1022", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "WhatsApp", "monto_final_cotizado": 800, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.3 Supervisión Acabados", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-01-09", "fecha_emision_propuesta": "2025-01-11", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-02-05", "motivo_perdida": "Precio Elevado" }, { "id_cliente": "CLI-003", "nombre_razon_social": "Inversiones Inmobiliarias 9", "nombre_contacto": "Carlos Mendoza", "telefono": "941793441", "correo_electronico": "contacto2@empresa.com", "id_propuesta": "PROP-1016", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "Página Web", "monto_final_cotizado": 8400, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.2 Revisión Dossier", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-01-13", "fecha_emision_propuesta": "2025-01-15", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-02-10", "motivo_perdida": "" }, { "id_cliente": "CLI-008", "nombre_razon_social": "Consorcio ABC 9", "nombre_contacto": "Diego Porras", "telefono": "926504027", "correo_electronico": "contacto7@empresa.com", "id_propuesta": "PROP-1091", "nombre_proyecto": "Casa Cieneguilla", "medio_captacion": "WhatsApp", "monto_final_cotizado": 1500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.1 ITD", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-01-19", "fecha_emision_propuesta": "2025-01-21", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-01-28", "motivo_perdida": "Precio Elevado" }, { "id_cliente": "CLI-001", "nombre_razon_social": "Constructora S.A. 6", "nombre_contacto": "Carlos Mendoza", "telefono": "934627465", "correo_electronico": "contacto0@empresa.com", "id_propuesta": "PROP-1038", "nombre_proyecto": "Torre Pacífico", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 8400, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-01-26", "fecha_emision_propuesta": "2025-01-26", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-01-29", "motivo_perdida": "Precio Elevado" }, { "id_cliente": "CLI-011", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Andrea Montes", "telefono": "966424438", "correo_electronico": "contacto10@empresa.com", "id_propuesta": "PROP-1055", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "Directorio", "monto_final_cotizado": 12000, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2025-01-28", "fecha_emision_propuesta": "2025-01-31", "estado_propuesta": "2. Propuesta Enviada", "fecha_cierre": "None", "motivo_perdida": "Precio Elevado" }, { "id_cliente": "CLI-009", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Alfonso Cerna", "telefono": "967120571", "correo_electronico": "contacto8@empresa.com", "id_propuesta": "PROP-1032", "nombre_proyecto": "Edificio Miramar II", "medio_captacion": "Página Web", "monto_final_cotizado": 12000, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-02-09", "fecha_emision_propuesta": "2025-02-10", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-02-21", "motivo_perdida": "" }, { "id_cliente": "CLI-004", "nombre_razon_social": "Constructora Paca 9", "nombre_contacto": "Fred Noa", "telefono": "995424884", "correo_electronico": "contacto3@empresa.com", "id_propuesta": "PROP-1084", "nombre_proyecto": "Edificio Miramar II", "medio_captacion": "Página Web", "monto_final_cotizado": 8400, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.1 ITD", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2025-03-01", "fecha_emision_propuesta": "2025-03-03", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-03-25", "motivo_perdida": "" }, { "id_cliente": "CLI-002", "nombre_razon_social": "JP Edificio Miramar 6", "nombre_contacto": "Andrea Montes", "telefono": "980912319", "correo_electronico": "contacto1@empresa.com", "id_propuesta": "PROP-1073", "nombre_proyecto": "Casa Cieneguilla", "medio_captacion": "LinkedIn", "monto_final_cotizado": 500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-03-12", "fecha_emision_propuesta": "2025-03-15", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-04-04", "motivo_perdida": "Falla/Demora Nuestra" }, { "id_cliente": "CLI-008", "nombre_razon_social": "Consorcio ABC 9", "nombre_contacto": "Diego Porras", "telefono": "926504027", "correo_electronico": "contacto7@empresa.com", "id_propuesta": "PROP-1024", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "LinkedIn", "monto_final_cotizado": 1500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.3 Supervisión Acabados", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-03-14", "fecha_emision_propuesta": "2025-03-16", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "Falla/Demora Nuestra" }, { "id_cliente": "CLI-003", "nombre_razon_social": "Inversiones Inmobiliarias 9", "nombre_contacto": "Carlos Mendoza", "telefono": "941793441", "correo_electronico": "contacto2@empresa.com", "id_propuesta": "PROP-1058", "nombre_proyecto": "Condominio El Sol", "medio_captacion": "Página Web", "monto_final_cotizado": 800, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.2 Lev. Observaciones", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2025-03-16", "fecha_emision_propuesta": "2025-03-17", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-03-24", "motivo_perdida": "Falla/Demora Nuestra" }, { "id_cliente": "CLI-006", "nombre_razon_social": "Inversiones Inmobiliarias 4", "nombre_contacto": "Diego Porras", "telefono": "992780191", "correo_electronico": "contacto5@empresa.com", "id_propuesta": "PROP-1065", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "WhatsApp", "monto_final_cotizado": 800, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.1 IPV", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2025-03-17", "fecha_emision_propuesta": "2025-03-19", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-04-08", "motivo_perdida": "Falla/Demora Nuestra" }, { "id_cliente": "CLI-006", "nombre_razon_social": "Inversiones Inmobiliarias 4", "nombre_contacto": "Diego Porras", "telefono": "992780191", "correo_electronico": "contacto5@empresa.com", "id_propuesta": "PROP-1017", "nombre_proyecto": "Edificio Miramar II", "medio_captacion": "LinkedIn", "monto_final_cotizado": 3500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.1 ITD", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2025-03-24", "fecha_emision_propuesta": "2025-03-25", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-04-22", "motivo_perdida": "Precio Elevado" }, { "id_cliente": "CLI-010", "nombre_razon_social": "Constructora S.A. 4", "nombre_contacto": "Rosa Valdivia", "telefono": "994243477", "correo_electronico": "contacto9@empresa.com", "id_propuesta": "PROP-1026", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "Directorio", "monto_final_cotizado": 3500, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.1 Elaboración Dossier", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2025-03-27", "fecha_emision_propuesta": "2025-03-30", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-04-18", "motivo_perdida": "" }, { "id_cliente": "CLI-002", "nombre_razon_social": "JP Edificio Miramar 6", "nombre_contacto": "Andrea Montes", "telefono": "980912319", "correo_electronico": "contacto1@empresa.com", "id_propuesta": "PROP-1007", "nombre_proyecto": "Torre Pacífico", "medio_captacion": "Página Web", "monto_final_cotizado": 12000, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.2 Rev. Expediente", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-03-30", "fecha_emision_propuesta": "2025-03-30", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-04-02", "motivo_perdida": "Falla/Demora Nuestra" }, { "id_cliente": "CLI-015", "nombre_razon_social": "Consorcio ABC 1", "nombre_contacto": "Felipe Ramírez", "telefono": "923067080", "correo_electronico": "contacto14@empresa.com", "id_propuesta": "PROP-1048", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "WhatsApp", "monto_final_cotizado": 12000, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2025-04-20", "fecha_emision_propuesta": "2025-04-23", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-05-07", "motivo_perdida": "Falla/Demora Nuestra" }, { "id_cliente": "CLI-008", "nombre_razon_social": "Consorcio ABC 9", "nombre_contacto": "Diego Porras", "telefono": "926504027", "correo_electronico": "contacto7@empresa.com", "id_propuesta": "PROP-1071", "nombre_proyecto": "Casa Cieneguilla", "medio_captacion": "Directorio", "monto_final_cotizado": 3500, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.1 IPV", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2025-04-23", "fecha_emision_propuesta": "2025-04-25", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-004", "nombre_razon_social": "Constructora Paca 9", "nombre_contacto": "Fred Noa", "telefono": "995424884", "correo_electronico": "contacto3@empresa.com", "id_propuesta": "PROP-1060", "nombre_proyecto": "Casa Cieneguilla", "medio_captacion": "Directorio", "monto_final_cotizado": 2500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.1 ITD", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2025-05-06", "fecha_emision_propuesta": "2025-05-09", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-05-13", "motivo_perdida": "" }, { "id_cliente": "CLI-011", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Andrea Montes", "telefono": "966424438", "correo_electronico": "contacto10@empresa.com", "id_propuesta": "PROP-1053", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "Referido", "monto_final_cotizado": 8400, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.1 ITD", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2025-05-14", "fecha_emision_propuesta": "2025-05-16", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-05-27", "motivo_perdida": "Falla/Demora Nuestra" }, { "id_cliente": "CLI-004", "nombre_razon_social": "Constructora Paca 9", "nombre_contacto": "Fred Noa", "telefono": "995424884", "correo_electronico": "contacto3@empresa.com", "id_propuesta": "PROP-1049", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "Referido", "monto_final_cotizado": 500, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2025-05-16", "fecha_emision_propuesta": "2025-05-16", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-05-18", "motivo_perdida": "" }, { "id_cliente": "CLI-003", "nombre_razon_social": "Inversiones Inmobiliarias 9", "nombre_contacto": "Carlos Mendoza", "telefono": "941793441", "correo_electronico": "contacto2@empresa.com", "id_propuesta": "PROP-1061", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "Directorio", "monto_final_cotizado": 3500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2025-05-20", "fecha_emision_propuesta": "2025-05-22", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-001", "nombre_razon_social": "Constructora S.A. 6", "nombre_contacto": "Carlos Mendoza", "telefono": "934627465", "correo_electronico": "contacto0@empresa.com", "id_propuesta": "PROP-1041", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "Página Web", "monto_final_cotizado": 5000, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2025-06-03", "fecha_emision_propuesta": "2025-06-05", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-06-18", "motivo_perdida": "Competencia" }, { "id_cliente": "CLI-012", "nombre_razon_social": "Consorcio ABC 3", "nombre_contacto": "Andrea Montes", "telefono": "958100650", "correo_electronico": "contacto11@empresa.com", "id_propuesta": "PROP-1082", "nombre_proyecto": "Torre Pacífico", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 1500, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.2 Revisión Dossier", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-06-11", "fecha_emision_propuesta": "2025-06-11", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-06-23", "motivo_perdida": "" }, { "id_cliente": "CLI-012", "nombre_razon_social": "Consorcio ABC 3", "nombre_contacto": "Andrea Montes", "telefono": "958100650", "correo_electronico": "contacto11@empresa.com", "id_propuesta": "PROP-1021", "nombre_proyecto": "Condominio El Sol", "medio_captacion": "LinkedIn", "monto_final_cotizado": 1500, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.2 Lev. Observaciones", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-06-14", "fecha_emision_propuesta": "2025-06-16", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-06-23", "motivo_perdida": "Falla/Demora Nuestra" }, { "id_cliente": "CLI-007", "nombre_razon_social": "JP Edificio Miramar 7", "nombre_contacto": "Rosa Valdivia", "telefono": "943756422", "correo_electronico": "contacto6@empresa.com", "id_propuesta": "PROP-1011", "nombre_proyecto": "Torre Pacífico", "medio_captacion": "Referido", "monto_final_cotizado": 2500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.3 Supervisión Acabados", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-06-15", "fecha_emision_propuesta": "2025-06-16", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-014", "nombre_razon_social": "Constructora Paca 4", "nombre_contacto": "Alfonso Cerna", "telefono": "984359802", "correo_electronico": "contacto13@empresa.com", "id_propuesta": "PROP-1089", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 800, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.1 Elaboración Dossier", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2025-06-17", "fecha_emision_propuesta": "2025-06-18", "estado_propuesta": "2. Propuesta Enviada", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-009", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Alfonso Cerna", "telefono": "967120571", "correo_electronico": "contacto8@empresa.com", "id_propuesta": "PROP-1025", "nombre_proyecto": "Edificio Miramar II", "medio_captacion": "WhatsApp", "monto_final_cotizado": 5000, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2025-07-02", "fecha_emision_propuesta": "2025-07-02", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-07-08", "motivo_perdida": "Proyecto Cancelado" }, { "id_cliente": "CLI-004", "nombre_razon_social": "Constructora Paca 9", "nombre_contacto": "Fred Noa", "telefono": "995424884", "correo_electronico": "contacto3@empresa.com", "id_propuesta": "PROP-1047", "nombre_proyecto": "Condominio El Sol", "medio_captacion": "LinkedIn", "monto_final_cotizado": 12000, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.1 IPV", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-07-05", "fecha_emision_propuesta": "2025-07-07", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-07-11", "motivo_perdida": "" }, { "id_cliente": "CLI-002", "nombre_razon_social": "JP Edificio Miramar 6", "nombre_contacto": "Andrea Montes", "telefono": "980912319", "correo_electronico": "contacto1@empresa.com", "id_propuesta": "PROP-1090", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "Directorio", "monto_final_cotizado": 800, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.2 Revisión Dossier", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-07-05", "fecha_emision_propuesta": "2025-07-05", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-08-04", "motivo_perdida": "Precio Elevado" }, { "id_cliente": "CLI-003", "nombre_razon_social": "Inversiones Inmobiliarias 9", "nombre_contacto": "Carlos Mendoza", "telefono": "941793441", "correo_electronico": "contacto2@empresa.com", "id_propuesta": "PROP-1031", "nombre_proyecto": "Torre Pacífico", "medio_captacion": "Directorio", "monto_final_cotizado": 1500, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.1 IPV", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-07-08", "fecha_emision_propuesta": "2025-07-09", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-07-13", "motivo_perdida": "" }, { "id_cliente": "CLI-007", "nombre_razon_social": "JP Edificio Miramar 7", "nombre_contacto": "Rosa Valdivia", "telefono": "943756422", "correo_electronico": "contacto6@empresa.com", "id_propuesta": "PROP-1008", "nombre_proyecto": "Condominio El Sol", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 2500, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.2 Revisión Dossier", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2025-07-10", "fecha_emision_propuesta": "2025-07-13", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-07-24", "motivo_perdida": "Falla/Demora Nuestra" }, { "id_cliente": "CLI-001", "nombre_razon_social": "Constructora S.A. 6", "nombre_contacto": "Carlos Mendoza", "telefono": "934627465", "correo_electronico": "contacto0@empresa.com", "id_propuesta": "PROP-1029", "nombre_proyecto": "Condominio El Sol", "medio_captacion": "WhatsApp", "monto_final_cotizado": 1500, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.1 IPV", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-07-23", "fecha_emision_propuesta": "2025-07-23", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-007", "nombre_razon_social": "JP Edificio Miramar 7", "nombre_contacto": "Rosa Valdivia", "telefono": "943756422", "correo_electronico": "contacto6@empresa.com", "id_propuesta": "PROP-1067", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "WhatsApp", "monto_final_cotizado": 8400, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2025-07-23", "fecha_emision_propuesta": "2025-07-26", "estado_propuesta": "1. Contacto Inicial", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-010", "nombre_razon_social": "Constructora S.A. 4", "nombre_contacto": "Rosa Valdivia", "telefono": "994243477", "correo_electronico": "contacto9@empresa.com", "id_propuesta": "PROP-1004", "nombre_proyecto": "Proyecto Acacias", "medio_captacion": "LinkedIn", "monto_final_cotizado": 800, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.2 Revisión Dossier", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2025-07-28", "fecha_emision_propuesta": "2025-07-29", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-08-13", "motivo_perdida": "" }, { "id_cliente": "CLI-011", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Andrea Montes", "telefono": "966424438", "correo_electronico": "contacto10@empresa.com", "id_propuesta": "PROP-1018", "nombre_proyecto": "Torre Pacífico", "medio_captacion": "LinkedIn", "monto_final_cotizado": 8400, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.1 IPV", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2025-07-29", "fecha_emision_propuesta": "2025-07-30", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-08-21", "motivo_perdida": "" }, { "id_cliente": "CLI-011", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Andrea Montes", "telefono": "966424438", "correo_electronico": "contacto10@empresa.com", "id_propuesta": "PROP-1030", "nombre_proyecto": "Edificio Miramar II", "medio_captacion": "Página Web", "monto_final_cotizado": 3500, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.2 Rev. Expediente", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-08-04", "fecha_emision_propuesta": "2025-08-07", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-08-23", "motivo_perdida": "" }, { "id_cliente": "CLI-012", "nombre_razon_social": "Consorcio ABC 3", "nombre_contacto": "Andrea Montes", "telefono": "958100650", "correo_electronico": "contacto11@empresa.com", "id_propuesta": "PROP-1072", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 12000, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.2 Rev. Expediente", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-08-16", "fecha_emision_propuesta": "2025-08-19", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-08-22", "motivo_perdida": "Proyecto Cancelado" }, { "id_cliente": "CLI-010", "nombre_razon_social": "Constructora S.A. 4", "nombre_contacto": "Rosa Valdivia", "telefono": "994243477", "correo_electronico": "contacto9@empresa.com", "id_propuesta": "PROP-1087", "nombre_proyecto": "Condominio El Sol", "medio_captacion": "Referido", "monto_final_cotizado": 12000, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.1 Elaboración Dossier", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2025-08-17", "fecha_emision_propuesta": "2025-08-19", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-008", "nombre_razon_social": "Consorcio ABC 9", "nombre_contacto": "Diego Porras", "telefono": "926504027", "correo_electronico": "contacto7@empresa.com", "id_propuesta": "PROP-1009", "nombre_proyecto": "Edificio Miramar II", "medio_captacion": "WhatsApp", "monto_final_cotizado": 2500, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-08-27", "fecha_emision_propuesta": "2025-08-27", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-08-31", "motivo_perdida": "" }, { "id_cliente": "CLI-012", "nombre_razon_social": "Consorcio ABC 3", "nombre_contacto": "Andrea Montes", "telefono": "958100650", "correo_electronico": "contacto11@empresa.com", "id_propuesta": "PROP-1059", "nombre_proyecto": "Condominio El Sol", "medio_captacion": "Referido", "monto_final_cotizado": 3500, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.1 Elaboración Dossier", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2025-09-03", "fecha_emision_propuesta": "2025-09-06", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-09-25", "motivo_perdida": "Precio Elevado" }, { "id_cliente": "CLI-012", "nombre_razon_social": "Consorcio ABC 3", "nombre_contacto": "Andrea Montes", "telefono": "958100650", "correo_electronico": "contacto11@empresa.com", "id_propuesta": "PROP-1028", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "Referido", "monto_final_cotizado": 800, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2025-09-04", "fecha_emision_propuesta": "2025-09-05", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-007", "nombre_razon_social": "JP Edificio Miramar 7", "nombre_contacto": "Rosa Valdivia", "telefono": "943756422", "correo_electronico": "contacto6@empresa.com", "id_propuesta": "PROP-1033", "nombre_proyecto": "Torre Pacífico", "medio_captacion": "LinkedIn", "monto_final_cotizado": 800, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2025-09-23", "fecha_emision_propuesta": "2025-09-24", "estado_propuesta": "2. Propuesta Enviada", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-012", "nombre_razon_social": "Consorcio ABC 3", "nombre_contacto": "Andrea Montes", "telefono": "958100650", "correo_electronico": "contacto11@empresa.com", "id_propuesta": "PROP-1020", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "Referido", "monto_final_cotizado": 3500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2025-10-01", "fecha_emision_propuesta": "2025-10-02", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-10-25", "motivo_perdida": "Cliente Abandonó" }, { "id_cliente": "CLI-003", "nombre_razon_social": "Inversiones Inmobiliarias 9", "nombre_contacto": "Carlos Mendoza", "telefono": "941793441", "correo_electronico": "contacto2@empresa.com", "id_propuesta": "PROP-1013", "nombre_proyecto": "Condominio El Sol", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 8400, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.3 Supervisión Acabados", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-10-02", "fecha_emision_propuesta": "2025-10-03", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-013", "nombre_razon_social": "Constructora Paca 8", "nombre_contacto": "Fred Noa", "telefono": "911566712", "correo_electronico": "contacto12@empresa.com", "id_propuesta": "PROP-1096", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "WhatsApp", "monto_final_cotizado": 12000, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.2 Lev. Observaciones", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2025-10-04", "fecha_emision_propuesta": "2025-10-04", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-10-24", "motivo_perdida": "Competencia" }, { "id_cliente": "CLI-010", "nombre_razon_social": "Constructora S.A. 4", "nombre_contacto": "Rosa Valdivia", "telefono": "994243477", "correo_electronico": "contacto9@empresa.com", "id_propuesta": "PROP-1057", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "Directorio", "monto_final_cotizado": 2500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2025-10-06", "fecha_emision_propuesta": "2025-10-09", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-11-06", "motivo_perdida": "" }, { "id_cliente": "CLI-006", "nombre_razon_social": "Inversiones Inmobiliarias 4", "nombre_contacto": "Diego Porras", "telefono": "992780191", "correo_electronico": "contacto5@empresa.com", "id_propuesta": "PROP-1019", "nombre_proyecto": "Casa Cieneguilla", "medio_captacion": "WhatsApp", "monto_final_cotizado": 5000, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.2 Revisión Dossier", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-10-14", "fecha_emision_propuesta": "2025-10-14", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-10-22", "motivo_perdida": "Cliente Abandonó" }, { "id_cliente": "CLI-014", "nombre_razon_social": "Constructora Paca 4", "nombre_contacto": "Alfonso Cerna", "telefono": "984359802", "correo_electronico": "contacto13@empresa.com", "id_propuesta": "PROP-1099", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "Página Web", "monto_final_cotizado": 2500, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.1 Elaboración Dossier", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-10-14", "fecha_emision_propuesta": "2025-10-14", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-10-24", "motivo_perdida": "" }, { "id_cliente": "CLI-004", "nombre_razon_social": "Constructora Paca 9", "nombre_contacto": "Fred Noa", "telefono": "995424884", "correo_electronico": "contacto3@empresa.com", "id_propuesta": "PROP-1074", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "Referido", "monto_final_cotizado": 5000, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.1 IPV", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-10-23", "fecha_emision_propuesta": "2025-10-25", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-11-11", "motivo_perdida": "" }, { "id_cliente": "CLI-011", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Andrea Montes", "telefono": "966424438", "correo_electronico": "contacto10@empresa.com", "id_propuesta": "PROP-1075", "nombre_proyecto": "Casa Cieneguilla", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 8400, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.2 Rev. Expediente", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-10-28", "fecha_emision_propuesta": "2025-10-31", "estado_propuesta": "1. Contacto Inicial", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-007", "nombre_razon_social": "JP Edificio Miramar 7", "nombre_contacto": "Rosa Valdivia", "telefono": "943756422", "correo_electronico": "contacto6@empresa.com", "id_propuesta": "PROP-1003", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "Página Web", "monto_final_cotizado": 2500, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.2 Revisión Dossier", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-10-30", "fecha_emision_propuesta": "2025-11-01", "estado_propuesta": "2. Propuesta Enviada", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-015", "nombre_razon_social": "Consorcio ABC 1", "nombre_contacto": "Felipe Ramírez", "telefono": "923067080", "correo_electronico": "contacto14@empresa.com", "id_propuesta": "PROP-1052", "nombre_proyecto": "Edificio Miramar II", "medio_captacion": "Directorio", "monto_final_cotizado": 2500, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-11-01", "fecha_emision_propuesta": "2025-11-04", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-003", "nombre_razon_social": "Inversiones Inmobiliarias 9", "nombre_contacto": "Carlos Mendoza", "telefono": "941793441", "correo_electronico": "contacto2@empresa.com", "id_propuesta": "PROP-1070", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "Referido", "monto_final_cotizado": 8400, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2025-11-04", "fecha_emision_propuesta": "2025-11-06", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2025-11-18", "motivo_perdida": "" }, { "id_cliente": "CLI-002", "nombre_razon_social": "JP Edificio Miramar 6", "nombre_contacto": "Andrea Montes", "telefono": "980912319", "correo_electronico": "contacto1@empresa.com", "id_propuesta": "PROP-1068", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "WhatsApp", "monto_final_cotizado": 500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.1 ITD", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2025-11-18", "fecha_emision_propuesta": "2025-11-18", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-12-16", "motivo_perdida": "Cliente Abandonó" }, { "id_cliente": "CLI-013", "nombre_razon_social": "Constructora Paca 8", "nombre_contacto": "Fred Noa", "telefono": "911566712", "correo_electronico": "contacto12@empresa.com", "id_propuesta": "PROP-1088", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "Referido", "monto_final_cotizado": 12000, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-11-24", "fecha_emision_propuesta": "2025-11-24", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-12-07", "motivo_perdida": "Competencia" }, { "id_cliente": "CLI-005", "nombre_razon_social": "Grupo Octagon 9", "nombre_contacto": "Andrea Montes", "telefono": "977923968", "correo_electronico": "contacto4@empresa.com", "id_propuesta": "PROP-1044", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "WhatsApp", "monto_final_cotizado": 800, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.2 Lev. Observaciones", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2025-11-25", "fecha_emision_propuesta": "2025-11-25", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2025-12-02", "motivo_perdida": "Precio Elevado" }, { "id_cliente": "CLI-012", "nombre_razon_social": "Consorcio ABC 3", "nombre_contacto": "Andrea Montes", "telefono": "958100650", "correo_electronico": "contacto11@empresa.com", "id_propuesta": "PROP-1064", "nombre_proyecto": "Casa Cieneguilla", "medio_captacion": "Página Web", "monto_final_cotizado": 800, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.2 Revisión Dossier", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2025-12-07", "fecha_emision_propuesta": "2025-12-08", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-010", "nombre_razon_social": "Constructora S.A. 4", "nombre_contacto": "Rosa Valdivia", "telefono": "994243477", "correo_electronico": "contacto9@empresa.com", "id_propuesta": "PROP-1078", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "Referido", "monto_final_cotizado": 800, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.1 IPV", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2026-01-02", "fecha_emision_propuesta": "2026-01-04", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-006", "nombre_razon_social": "Inversiones Inmobiliarias 4", "nombre_contacto": "Diego Porras", "telefono": "992780191", "correo_electronico": "contacto5@empresa.com", "id_propuesta": "PROP-1093", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "WhatsApp", "monto_final_cotizado": 500, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.2 Revisión Dossier", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2026-01-03", "fecha_emision_propuesta": "2026-01-05", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2026-01-13", "motivo_perdida": "" }, { "id_cliente": "CLI-007", "nombre_razon_social": "JP Edificio Miramar 7", "nombre_contacto": "Rosa Valdivia", "telefono": "943756422", "correo_electronico": "contacto6@empresa.com", "id_propuesta": "PROP-1045", "nombre_proyecto": "Torre Pacífico", "medio_captacion": "Directorio", "monto_final_cotizado": 8400, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2026-01-04", "fecha_emision_propuesta": "2026-01-07", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2026-01-19", "motivo_perdida": "" }, { "id_cliente": "CLI-009", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Alfonso Cerna", "telefono": "967120571", "correo_electronico": "contacto8@empresa.com", "id_propuesta": "PROP-1050", "nombre_proyecto": "Proyecto Acacias", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 12000, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2026-01-26", "fecha_emision_propuesta": "2026-01-27", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2026-01-29", "motivo_perdida": "" }, { "id_cliente": "CLI-012", "nombre_razon_social": "Consorcio ABC 3", "nombre_contacto": "Andrea Montes", "telefono": "958100650", "correo_electronico": "contacto11@empresa.com", "id_propuesta": "PROP-1023", "nombre_proyecto": "Edificio Miramar II", "medio_captacion": "LinkedIn", "monto_final_cotizado": 1500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2026-01-30", "fecha_emision_propuesta": "2026-02-02", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-014", "nombre_razon_social": "Constructora Paca 4", "nombre_contacto": "Alfonso Cerna", "telefono": "984359802", "correo_electronico": "contacto13@empresa.com", "id_propuesta": "PROP-1051", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "WhatsApp", "monto_final_cotizado": 1500, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2026-02-05", "fecha_emision_propuesta": "2026-02-08", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2026-02-26", "motivo_perdida": "Proyecto Cancelado" }, { "id_cliente": "CLI-015", "nombre_razon_social": "Consorcio ABC 1", "nombre_contacto": "Felipe Ramírez", "telefono": "923067080", "correo_electronico": "contacto14@empresa.com", "id_propuesta": "PROP-1085", "nombre_proyecto": "Torre Pacífico", "medio_captacion": "WhatsApp", "monto_final_cotizado": 12000, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.2 Rev. Expediente", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2026-03-03", "fecha_emision_propuesta": "2026-03-03", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2026-04-02", "motivo_perdida": "Competencia" }, { "id_cliente": "CLI-005", "nombre_razon_social": "Grupo Octagon 9", "nombre_contacto": "Andrea Montes", "telefono": "977923968", "correo_electronico": "contacto4@empresa.com", "id_propuesta": "PROP-1079", "nombre_proyecto": "Edificio Miramar II", "medio_captacion": "Página Web", "monto_final_cotizado": 8400, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.1 IPV", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2026-03-09", "fecha_emision_propuesta": "2026-03-12", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-005", "nombre_razon_social": "Grupo Octagon 9", "nombre_contacto": "Andrea Montes", "telefono": "977923968", "correo_electronico": "contacto4@empresa.com", "id_propuesta": "PROP-1086", "nombre_proyecto": "Edificio Miramar II", "medio_captacion": "LinkedIn", "monto_final_cotizado": 2500, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2026-03-15", "fecha_emision_propuesta": "2026-03-15", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2026-03-25", "motivo_perdida": "Precio Elevado" }, { "id_cliente": "CLI-008", "nombre_razon_social": "Consorcio ABC 9", "nombre_contacto": "Diego Porras", "telefono": "926504027", "correo_electronico": "contacto7@empresa.com", "id_propuesta": "PROP-1010", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "WhatsApp", "monto_final_cotizado": 3500, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2026-03-17", "fecha_emision_propuesta": "2026-03-17", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2026-03-27", "motivo_perdida": "Proyecto Cancelado" }, { "id_cliente": "CLI-015", "nombre_razon_social": "Consorcio ABC 1", "nombre_contacto": "Felipe Ramírez", "telefono": "923067080", "correo_electronico": "contacto14@empresa.com", "id_propuesta": "PROP-1006", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "WhatsApp", "monto_final_cotizado": 12000, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.1 ITD", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2026-03-24", "fecha_emision_propuesta": "2026-03-25", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2026-04-05", "motivo_perdida": "" }, { "id_cliente": "CLI-013", "nombre_razon_social": "Constructora Paca 8", "nombre_contacto": "Fred Noa", "telefono": "911566712", "correo_electronico": "contacto12@empresa.com", "id_propuesta": "PROP-1046", "nombre_proyecto": "Condominio El Sol", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 1500, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.2 Lev. Observaciones", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2026-03-25", "fecha_emision_propuesta": "2026-03-28", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-003", "nombre_razon_social": "Inversiones Inmobiliarias 9", "nombre_contacto": "Carlos Mendoza", "telefono": "941793441", "correo_electronico": "contacto2@empresa.com", "id_propuesta": "PROP-1039", "nombre_proyecto": "Edificio Miramar II", "medio_captacion": "LinkedIn", "monto_final_cotizado": 5000, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.2 Revisión Dossier", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2026-03-29", "fecha_emision_propuesta": "2026-03-30", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-009", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Alfonso Cerna", "telefono": "967120571", "correo_electronico": "contacto8@empresa.com", "id_propuesta": "PROP-1015", "nombre_proyecto": "Proyecto Acacias", "medio_captacion": "WhatsApp", "monto_final_cotizado": 12000, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2026-03-30", "fecha_emision_propuesta": "2026-04-02", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-008", "nombre_razon_social": "Consorcio ABC 9", "nombre_contacto": "Diego Porras", "telefono": "926504027", "correo_electronico": "contacto7@empresa.com", "id_propuesta": "PROP-1098", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "Referido", "monto_final_cotizado": 1500, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.1 Elaboración Dossier", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2026-03-31", "fecha_emision_propuesta": "2026-03-31", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2026-04-18", "motivo_perdida": "Falla/Demora Nuestra" }, { "id_cliente": "CLI-007", "nombre_razon_social": "JP Edificio Miramar 7", "nombre_contacto": "Rosa Valdivia", "telefono": "943756422", "correo_electronico": "contacto6@empresa.com", "id_propuesta": "PROP-1012", "nombre_proyecto": "Condominio El Sol", "medio_captacion": "Página Web", "monto_final_cotizado": 5000, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.1 ITD", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2026-03-31", "fecha_emision_propuesta": "2026-03-31", "estado_propuesta": "1. Contacto Inicial", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-006", "nombre_razon_social": "Inversiones Inmobiliarias 4", "nombre_contacto": "Diego Porras", "telefono": "992780191", "correo_electronico": "contacto5@empresa.com", "id_propuesta": "PROP-1014", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "WhatsApp", "monto_final_cotizado": 500, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.1 Elaboración Dossier", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2026-04-02", "fecha_emision_propuesta": "2026-04-05", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2026-04-12", "motivo_perdida": "" }, { "id_cliente": "CLI-003", "nombre_razon_social": "Inversiones Inmobiliarias 9", "nombre_contacto": "Carlos Mendoza", "telefono": "941793441", "correo_electronico": "contacto2@empresa.com", "id_propuesta": "PROP-1066", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "Directorio", "monto_final_cotizado": 8400, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.3 Supervisión Acabados", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2026-04-22", "fecha_emision_propuesta": "2026-04-23", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2026-04-30", "motivo_perdida": "" }, { "id_cliente": "CLI-009", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Alfonso Cerna", "telefono": "967120571", "correo_electronico": "contacto8@empresa.com", "id_propuesta": "PROP-1043", "nombre_proyecto": "Condominio El Sol", "medio_captacion": "WhatsApp", "monto_final_cotizado": 8400, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2026-04-25", "fecha_emision_propuesta": "2026-04-27", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2026-05-16", "motivo_perdida": "Cliente Abandonó" }, { "id_cliente": "CLI-008", "nombre_razon_social": "Consorcio ABC 9", "nombre_contacto": "Diego Porras", "telefono": "926504027", "correo_electronico": "contacto7@empresa.com", "id_propuesta": "PROP-1056", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "Referido", "monto_final_cotizado": 500, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.2 Rev. Expediente", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2026-04-29", "fecha_emision_propuesta": "2026-05-01", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2026-05-13", "motivo_perdida": "" }, { "id_cliente": "CLI-002", "nombre_razon_social": "JP Edificio Miramar 6", "nombre_contacto": "Andrea Montes", "telefono": "980912319", "correo_electronico": "contacto1@empresa.com", "id_propuesta": "PROP-1080", "nombre_proyecto": "Edificio Miramar II", "medio_captacion": "WhatsApp", "monto_final_cotizado": 2500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.1 ITD", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2026-05-09", "fecha_emision_propuesta": "2026-05-11", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-008", "nombre_razon_social": "Consorcio ABC 9", "nombre_contacto": "Diego Porras", "telefono": "926504027", "correo_electronico": "contacto7@empresa.com", "id_propuesta": "PROP-1054", "nombre_proyecto": "Torre Pacífico", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 12000, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2026-05-16", "fecha_emision_propuesta": "2026-05-18", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2026-05-27", "motivo_perdida": "Falla/Demora Nuestra" }, { "id_cliente": "CLI-005", "nombre_razon_social": "Grupo Octagon 9", "nombre_contacto": "Andrea Montes", "telefono": "977923968", "correo_electronico": "contacto4@empresa.com", "id_propuesta": "PROP-1076", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "Directorio", "monto_final_cotizado": 2500, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.2 Revisión Dossier", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2026-05-26", "fecha_emision_propuesta": "2026-05-28", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-008", "nombre_razon_social": "Consorcio ABC 9", "nombre_contacto": "Diego Porras", "telefono": "926504027", "correo_electronico": "contacto7@empresa.com", "id_propuesta": "PROP-1036", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "Directorio", "monto_final_cotizado": 800, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.2 Revisión Dossier", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2026-05-29", "fecha_emision_propuesta": "2026-05-30", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2026-06-26", "motivo_perdida": "" }, { "id_cliente": "CLI-013", "nombre_razon_social": "Constructora Paca 8", "nombre_contacto": "Fred Noa", "telefono": "911566712", "correo_electronico": "contacto12@empresa.com", "id_propuesta": "PROP-1035", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.1 ITD", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2026-06-03", "fecha_emision_propuesta": "2026-06-04", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-005", "nombre_razon_social": "Grupo Octagon 9", "nombre_contacto": "Andrea Montes", "telefono": "977923968", "correo_electronico": "contacto4@empresa.com", "id_propuesta": "PROP-1062", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 5000, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.2 Rev. Expediente", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2026-06-04", "fecha_emision_propuesta": "2026-06-05", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2026-06-22", "motivo_perdida": "" }, { "id_cliente": "CLI-002", "nombre_razon_social": "JP Edificio Miramar 6", "nombre_contacto": "Andrea Montes", "telefono": "980912319", "correo_electronico": "contacto1@empresa.com", "id_propuesta": "PROP-1100", "nombre_proyecto": "Condominio El Sol", "medio_captacion": "Referido", "monto_final_cotizado": 500, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2026-06-05", "fecha_emision_propuesta": "2026-06-07", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2026-07-01", "motivo_perdida": "Cliente Abandonó" }, { "id_cliente": "CLI-014", "nombre_razon_social": "Constructora Paca 4", "nombre_contacto": "Alfonso Cerna", "telefono": "984359802", "correo_electronico": "contacto13@empresa.com", "id_propuesta": "PROP-1069", "nombre_proyecto": "Edificio Miramar II", "medio_captacion": "Página Web", "monto_final_cotizado": 800, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.2 Rev. Expediente", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2026-06-08", "fecha_emision_propuesta": "2026-06-11", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2026-06-24", "motivo_perdida": "Proyecto Cancelado" }, { "id_cliente": "CLI-002", "nombre_razon_social": "JP Edificio Miramar 6", "nombre_contacto": "Andrea Montes", "telefono": "980912319", "correo_electronico": "contacto1@empresa.com", "id_propuesta": "PROP-1027", "nombre_proyecto": "Torre Pacífico", "medio_captacion": "LinkedIn", "monto_final_cotizado": 800, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2026-06-13", "fecha_emision_propuesta": "2026-06-13", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2026-06-24", "motivo_perdida": "Precio Elevado" }, { "id_cliente": "CLI-006", "nombre_razon_social": "Inversiones Inmobiliarias 4", "nombre_contacto": "Diego Porras", "telefono": "992780191", "correo_electronico": "contacto5@empresa.com", "id_propuesta": "PROP-1083", "nombre_proyecto": "Edificio Parque Central", "medio_captacion": "LinkedIn", "monto_final_cotizado": 500, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.1 Elaboración Dossier", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2026-06-17", "fecha_emision_propuesta": "2026-06-17", "estado_propuesta": "2. Propuesta Enviada", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-005", "nombre_razon_social": "Grupo Octagon 9", "nombre_contacto": "Andrea Montes", "telefono": "977923968", "correo_electronico": "contacto4@empresa.com", "id_propuesta": "PROP-1092", "nombre_proyecto": "Casa Cieneguilla", "medio_captacion": "Referido", "monto_final_cotizado": 2500, "categoria_servicio_padre": "15. Dossier", "sub_servicio_hijo": "15.2 Revisión Dossier", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2026-06-23", "fecha_emision_propuesta": "2026-06-25", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2026-06-30", "motivo_perdida": "" }, { "id_cliente": "CLI-013", "nombre_razon_social": "Constructora Paca 8", "nombre_contacto": "Fred Noa", "telefono": "911566712", "correo_electronico": "contacto12@empresa.com", "id_propuesta": "PROP-1094", "nombre_proyecto": "Torre Pacífico", "medio_captacion": "LinkedIn", "monto_final_cotizado": 5000, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.3 Supervisión Acabados", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2026-06-28", "fecha_emision_propuesta": "2026-06-28", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2026-07-16", "motivo_perdida": "Proyecto Cancelado" }, { "id_cliente": "CLI-010", "nombre_razon_social": "Constructora S.A. 4", "nombre_contacto": "Rosa Valdivia", "telefono": "994243477", "correo_electronico": "contacto9@empresa.com", "id_propuesta": "PROP-1001", "nombre_proyecto": "Casa Cieneguilla", "medio_captacion": "Llamada Directa", "monto_final_cotizado": 2500, "categoria_servicio_padre": "14. Gestión Postventa", "sub_servicio_hijo": "14.1 IPV", "responsable_comercial": "Andrea Torres", "fecha_creacion_lead": "2026-07-02", "fecha_emision_propuesta": "2026-07-02", "estado_propuesta": "2. Propuesta Enviada", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-011", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Andrea Montes", "telefono": "966424438", "correo_electronico": "contacto10@empresa.com", "id_propuesta": "PROP-1002", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "WhatsApp", "monto_final_cotizado": 8400, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.3 Supervisión Acabados", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2026-07-05", "fecha_emision_propuesta": "2026-07-05", "estado_propuesta": "4. Aceptada", "fecha_cierre": "2026-07-22", "motivo_perdida": "" }, { "id_cliente": "CLI-009", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Alfonso Cerna", "telefono": "967120571", "correo_electronico": "contacto8@empresa.com", "id_propuesta": "PROP-1077", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "WhatsApp", "monto_final_cotizado": 12000, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.2 ITAC", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2026-07-08", "fecha_emision_propuesta": "2026-07-09", "estado_propuesta": "2. Propuesta Enviada", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-009", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Alfonso Cerna", "telefono": "967120571", "correo_electronico": "contacto8@empresa.com", "id_propuesta": "PROP-1063", "nombre_proyecto": "Residencial San Borja", "medio_captacion": "LinkedIn", "monto_final_cotizado": 3500, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2026-07-17", "fecha_emision_propuesta": "2026-07-18", "estado_propuesta": "1. Contacto Inicial", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-007", "nombre_razon_social": "JP Edificio Miramar 7", "nombre_contacto": "Rosa Valdivia", "telefono": "943756422", "correo_electronico": "contacto6@empresa.com", "id_propuesta": "PROP-1040", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "Referido", "monto_final_cotizado": 500, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Jordy Uceda", "fecha_creacion_lead": "2026-07-17", "fecha_emision_propuesta": "2026-07-17", "estado_propuesta": "5. Rechazada/Perdida", "fecha_cierre": "2026-08-05", "motivo_perdida": "Precio Elevado" }, { "id_cliente": "CLI-002", "nombre_razon_social": "JP Edificio Miramar 6", "nombre_contacto": "Andrea Montes", "telefono": "980912319", "correo_electronico": "contacto1@empresa.com", "id_propuesta": "PROP-1095", "nombre_proyecto": "Casa Cieneguilla", "medio_captacion": "Página Web", "monto_final_cotizado": 8400, "categoria_servicio_padre": "10. Inspecciones Técnicas", "sub_servicio_hijo": "10.1 ITD", "responsable_comercial": "Valery Padilla", "fecha_creacion_lead": "2026-07-19", "fecha_emision_propuesta": "2026-07-21", "estado_propuesta": "3. En Evaluación", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-011", "nombre_razon_social": "Edificaciones Modernas 9", "nombre_contacto": "Andrea Montes", "telefono": "966424438", "correo_electronico": "contacto10@empresa.com", "id_propuesta": "PROP-1034", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "Directorio", "monto_final_cotizado": 800, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.2 Rev. Expediente", "responsable_comercial": "Kelli Livora", "fecha_creacion_lead": "2026-07-19", "fecha_emision_propuesta": "2026-07-20", "estado_propuesta": "2. Propuesta Enviada", "fecha_cierre": "None", "motivo_perdida": "" }, { "id_cliente": "CLI-012", "nombre_razon_social": "Consorcio ABC 3", "nombre_contacto": "Andrea Montes", "telefono": "958100650", "correo_electronico": "contacto11@empresa.com", "id_propuesta": "PROP-1042", "nombre_proyecto": "Multifamiliar Lux", "medio_captacion": "LinkedIn", "monto_final_cotizado": 3500, "categoria_servicio_padre": "11. Supervisión", "sub_servicio_hijo": "11.1 Sup. Obra Civil", "responsable_comercial": "Miguel Ríos", "fecha_creacion_lead": "2026-08-05", "fecha_emision_propuesta": "2026-08-07", "estado_propuesta": "2. Propuesta Enviada", "fecha_cierre": "None", "motivo_perdida": "" }];
+
+    // ---------- STATE ----------
+    const LS_KEY = 'checkin_crm_v1';
+function loadData() {
+  try { const s = localStorage.getItem(LS_KEY); if (s) { const a = JSON.parse(s); if (Array.isArray(a) && a.length) return a; } } catch (e) {}
+  return DATA.slice();
+}
+function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.data)); } catch (e) {} }
+    let state = { role: 'admin', user: '', data: loadData(), users: [], from: '', to: '' };
+    const COLORS = { primary: '#0969DA', primaryLight: '#3B82C4', primaryLighter: '#9DC0E8', primarySoft: '#C7DEF7', green: '#1A7F37', red: '#C0392B', gray: '#5B6873', ink: '#1A2A36', line: '#E2E8F0' };
+    const charts = {};
+    let clients = {};
+
+    // ---------- PROPOSAL PDF TEMPLATE ----------
+    const LOGO_DATA = 'data:image/jpeg;base64,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';
+    const PLANTILLA = {
+      empresa: {
+        nombre: 'CHECKIN CASA',
+        razon_social: 'CHECKIN CASA S.A.C.',
+        ruc: '2060 123456 7',
+        direccion: 'Av. Javier Prado Este 123, San Borja, Lima',
+        cuentas: [
+          ['BCP – Soles', 'N° 193-1234567-0-12'],
+          ['BBVA – Soles', 'N° 0011-0123-01-12345678'],
+          ['Interbank – Soles', 'N° 200-3000123456-7']
+        ],
+        correo_contabilidad: 'contabilidad@checkincasa.pe',
+        telefonos: '(+51) 987 654 321',
+        correo_contacto: 'contacto@checkincasa.pe',
+        direccion_oficina: 'Av. Javier Prado Este 123, San Borja, Lima'
+      },
+      codigo_formato: 'CHK-SP-001',
+      horario_semana: 'Lunes a viernes de 09:00 a 18:00 horas',
+      horario_sabado: 'Sábados de 09:00 a 13:00 horas',
+      plazo_validez_dias: 30,
+      plazo_aceptacion_dias: 3,
+      porcentaje_adelanto: 50,
+      plazo_entrega_horas: 48,
+      condiciones_pago: '50% para iniciar el servicio y el 50% restante al inicio de la visita.',
+      nuestros_servicios: [
+        'Visita técnica del inspector',
+        'Revisión y validación técnica en campo',
+        'Explicación fundamentada de las observaciones'
+      ],
+      consideraciones_fijas: [
+        'El horario de trabajo en obra será de {{horario_semana}} y {{horario_sabado}}.',
+        'La presente propuesta tiene una validez de {{plazo_validez_dias}} días calendario a partir de su emisión.',
+        'La responsabilidad de CHECKIN CASA se limita estrictamente al alcance del servicio descrito en este documento.',
+        'CHECKIN CASA no es responsable de la elaboración de planos As-Built salvo expresa indicación escrita.',
+        'El plazo de aceptación formal de los entregables es de {{plazo_aceptacion_dias}} días hábiles tras su recepción.',
+        'Toda la información intercambiada se rige por estricta confidencialidad.'
+      ],
+      iso_comunicado: 'En cumplimiento de la norma ISO 37001 (Sistemas de Gestión Antisoborno), CHECKIN CASA reafirma su política de tolerancia cero frente a cualquier forma de soborno, tanto en el ámbito público como privado. Queda prohibido ofrecer, prometer, dar, aceptar o solicitar cualquier ventaja indebida. Cualquier indicio al respecto debe reportarse a nuestro canal de ética institucional.',
+      instrumentos: ['Cinta métrica', 'Nivel láser', 'Detector de humedad', 'Cámara térmica', 'Escalímetro', 'Kit de inspección de acabados']
+    };
+    function serviceContent(cat, sub) {
+      const svc = (sub || cat || '').trim();
+      const isInspeccion = /inspecc|inspecci|supervis/i.test((cat || '') + ' ' + (sub || ''));
+      return {
+        isInspeccion,
+        alcance_resumen: 'Inspección y validación técnica de ' + svc + ' conforme a los estándares de la empresa.',
+        entregables_lista: ['Informe técnico de observaciones', 'Registro fotográfico del levantamiento', 'Dictamen fundamentado de los hallazgos'],
+        lista_alcance_tecnico: [
+          'Verificación de acabados y terminaciones.',
+          'Revisión de instalaciones y sistemas visibles.',
+          'Comprobación de niveles, plomos y alineaciones.',
+          'Validación de áreas y dimensiones entregadas.'
+        ],
+        lista_requisitos: [
+          'Acceso al inmueble en la fecha y hora coordinadas.',
+          'Disponibilidad de un punto de contacto en sitio.',
+          'Pago del ' + PLANTILLA.porcentaje_adelanto + '% del servicio antes de la visita.'
+        ],
+        lista_entregables_detalle: [
+          'Informe técnico documentado y firmado.',
+          'Registro fotográfico del levantamiento.',
+          'Sustentación de las observaciones encontradas.'
+        ],
+        lista_consideraciones_especificas: [
+          'La inspección cubre únicamente las áreas y sistemas declarados en el alcance.',
+          'No se consideran elementos ocultos o no accesibles al momento de la visita.'
+        ]
+      };
+    }
+
+    // ---------- HELPERS ----------
+    const st = d => d.estado_propuesta;
+    const EMITIDAS = s => s !== '1. Contacto Inicial';
+    const isAcept = s => s === '4. Aceptada';
+    const isPerd = s => s === '5. Rechazada/Perdida';
+    const isEval = s => s === '3. En Evaluación';
+    const isEmi = s => s === '2. Propuesta Enviada';
+    const isCont = s => s === '1. Contacto Inicial';
+    const money = n => 'S/ ' + Math.round(n).toLocaleString('es-PE');
+    const pct = n => (n * 100).toFixed(1) + '%';
+
+    function inRange(dateStr) {
+      if (!dateStr) return true;
+      if (state.from && dateStr < state.from) return false;
+      if (state.to && dateStr > state.to) return false;
+      return true;
+    }
+    function matchScope(d) {
+      if (state.role === 'seller' && d.responsable_comercial !== state.user) return false;
+      return inRange(d.fecha_creacion_lead);
+    }
+    function activeData() { return state.data.filter(matchScope); }
+
+    function buildClients() {
+      clients = {};
+      state.data.forEach(d => {
+        if (!clients[d.id_cliente]) {
+          clients[d.id_cliente] = { id_cliente: d.id_cliente, nombre_razon_social: d.nombre_razon_social, nombre_contacto: d.nombre_contacto, correo_electronico: d.correo_electronico };
+        }
+      });
+    }
+    function refreshAll() { renderKPIs(); renderCharts(); if (document.getElementById('view-clientes').classList.contains('active')) renderClientes(); }
+
+    function shortCat(c) { const i = c.indexOf('.'); return i > 0 ? c.slice(i + 1).trim() : c; }
+
+    // ---------- KPIs ----------
+    function computeKPIs() {
+      const d = activeData();
+      const emit = d.filter(x => EMITIDAS(st(x)));
+      const ac = d.filter(x => isAcept(st(x)));
+      const pe = d.filter(x => isPerd(st(x)));
+      const ev = d.filter(x => isEval(st(x)));
+      const win = emit.length ? ac.length / emit.length : 0;
+      const ing = ac.reduce((s, x) => s + (+x.monto_final_cotizado || 0), 0);
+      const pipe = ev.reduce((s, x) => s + (+x.monto_final_cotizado || 0), 0);
+      const ticket = ac.length ? ing / ac.length : 0;
+      // win rate por vendedor
+      const vend = {};
+      d.forEach(x => { const v = x.responsable_comercial; if (!vend[v]) vend[v] = { e: 0, a: 0 }; if (EMITIDAS(st(x))) vend[v].e++; if (isAcept(st(x))) vend[v].a++; });
+      let best = null;
+      Object.entries(vend).forEach(([v, o]) => { const r = o.e ? o.a / o.e : 0; if (!best || r > best.r) best = { v, r }; });
+      // motivos
+      const mot = {};
+      pe.forEach(x => { const m = x.motivo_perdida || 'Sin motivo'; mot[m] = (mot[m] || 0) + 1; });
+      let topMot = null;
+      Object.entries(mot).forEach(([m, c]) => { if (!topMot || c > topMot.c) topMot = { m, c }; });
+      // time to close
+      const diffs = ac.filter(x => x.fecha_cierre && x.fecha_emision_propuesta).map(x => {
+        const a = new Date(x.fecha_emision_propuesta), b = new Date(x.fecha_cierre);
+        return Math.round((b - a) / 86400000);
+      });
+      const ttc = diffs.length ? diffs.reduce((s, n) => s + n, 0) / diffs.length : 0;
+      return {
+        win, ing, pipe, ticket, best, topMot, topMotPct: pe.length ? topMot.c / pe.length : 0, ttc,
+        nEmit: emit.length, nAcept: ac.length, nPerd: pe.length
+      };
+    }
+
+    function renderKPIs() {
+      const k = computeKPIs();
+      const cards = [
+        { icon: '%', cls: 'blue', badge: state.role === 'seller' ? 'neutral' : 'neutral', badgeTxt: k.nEmit + ' emitidas', value: pct(k.win), label: 'Win Rate General', sub: 'Efectividad comercial' },
+        { icon: '★', cls: 'purple', badge: 'up', badgeTxt: 'mejor', value: k.best ? pct(k.best.r) : '—', label: 'Win Rate Mejor Vendedor', sub: k.best ? k.best.v : '—', adminOnly: true },
+        { icon: '⚠', cls: 'red', badge: 'down', badgeTxt: k.nPerd + ' perdidas', value: k.topMot ? pct(k.topMotPct) : '—', label: 'Principal Motivo Pérdida', sub: k.topMot ? k.topMot.m : '—' },
+        { icon: 'S/', cls: 'green', badge: 'up', badgeTxt: k.nAcept + ' aceptadas', value: money(k.ticket), label: 'Ticket Promedio', sub: 'Por contrato aceptado' },
+        { icon: '⏱', cls: 'blue', badge: 'neutral', badgeTxt: 'solo aceptadas', value: k.ttc.toFixed(1) + ' d', label: 'Time to Close', sub: 'Velocidad del ciclo' },
+        { icon: '⇅', cls: 'amber', badge: 'neutral', badgeTxt: 'en evaluación', value: money(k.pipe), label: 'Pipeline Activo', sub: 'Cerrado: ' + money(k.ing) },
+      ];
+      const visibleCards = state.role === 'seller' ? cards.filter(c => !c.adminOnly) : cards;
+      document.getElementById('kpiRow').innerHTML = visibleCards.map(c => `
+    <div class="kpi-card">
+      <div class="kpi-top">
+        <div class="kpi-icon ${c.cls}">${c.icon}</div>
+        <div class="kpi-badge ${c.badge}">${c.badgeTxt}</div>
+      </div>
+      <div class="kpi-value">${c.value}</div>
+      <div class="kpi-label">${c.label}</div>
+      <div class="kpi-sub">${c.sub}</div>
+    </div>`).join('');
+    }
+
+    // ---------- CHARTS ----------
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = COLORS.gray;
+
+    function renderCharts() {
+      const d = activeData();
+      // WIN RATE POR VENDEDOR (solo admin: un vendedor no ve la comparativa de pares)
+      const wvWidget = document.querySelector('.widget[data-w="winvendor"]');
+      const showWV = state.role !== 'seller';
+      if (wvWidget) wvWidget.style.display = showWV ? '' : 'none';
+      if (showWV) {
+        const vend = {}, order = [];
+        d.forEach(x => { const v = x.responsable_comercial; if (!vend[v]) { vend[v] = { e: 0, a: 0 }; order.push(v); } if (EMITIDAS(st(x))) vend[v].e++; if (isAcept(st(x))) vend[v].a++; });
+        const vlabels = order, vvals = order.map(v => vend[v].e ? +(vend[v].a / vend[v].e * 100).toFixed(1) : 0);
+        drawBar('chartWinVendor', vlabels, [{ label: 'Win Rate %', data: vvals, color: COLORS.primary }], { yMax: 100, ySuffix: '%' });
+      }
+
+      // MOTIVOS
+      const mot = {}; d.filter(x => isPerd(st(x))).forEach(x => { const m = x.motivo_perdida || 'Sin motivo'; mot[m] = (mot[m] || 0) + 1; });
+      const mlabels = Object.keys(mot), mvals = mlabels.map(m => mot[m]);
+      const mcolors = ['#0969DA', '#2F7FD0', '#5C9BDD', '#8FB8E8', '#BBD4F0'];
+      drawDoughnut('chartMotivos', mlabels, mvals, mcolors);
+
+      // TICKET PROMEDIO POR CATEGORIA
+      const cat = {}; d.filter(x => isAcept(st(x))).forEach(x => { const c = shortCat(x.categoria_servicio_padre); if (!cat[c]) cat[c] = { s: 0, n: 0 }; cat[c].s += +x.monto_final_cotizado || 0; cat[c].n++; });
+      const clabels = Object.keys(cat), cvals = clabels.map(c => Math.round(cat[c].s / cat[c].n));
+      drawBar('chartTicket', clabels, [{ label: 'Ticket promedio (S/)', data: cvals, color: COLORS.primary }], { yMoney: true });
+
+      // PIPELINE VS CERRADO POR CATEGORIA
+      const cats = [...new Set(d.map(x => shortCat(x.categoria_servicio_padre)))];
+      const pipeV = cats.map(c => d.filter(x => isEval(st(x)) && shortCat(x.categoria_servicio_padre) === c).reduce((s, x) => s + (+x.monto_final_cotizado || 0), 0));
+      const cerrV = cats.map(c => d.filter(x => isAcept(st(x)) && shortCat(x.categoria_servicio_padre) === c).reduce((s, x) => s + (+x.monto_final_cotizado || 0), 0));
+      drawBar('chartPipeline', cats,
+        [{ label: 'Cerrado (Aceptadas)', data: cerrV, color: COLORS.primary }, { label: 'Pipeline (En Evaluación)', data: pipeV, color: COLORS.primaryLight }],
+        { yMoney: true });
+
+      // TENDENCIA MENSUAL
+      const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Dic'];
+      const tot = Array(12).fill(0), ac = Array(12).fill(0);
+      d.forEach(x => { if (!x.fecha_creacion_lead) return; const mo = new Date(x.fecha_creacion_lead).getMonth(); tot[mo]++; if (isAcept(st(x))) ac[mo]++; });
+      drawLine('chartTendencia', meses,
+        [{ label: 'Propuestas', data: tot, color: COLORS.primary, fill: true },
+        { label: 'Aceptadas', data: ac, color: COLORS.green, fill: true }]);
+    }
+
+    function drawBar(id, labels, datasets, opt = {}) {
+      const ds = datasets.map(d => ({ label: d.label, data: d.data, backgroundColor: d.color, borderRadius: 6, barPercentage: .6 }));
+      if (charts[id]) charts[id].destroy();
+      charts[id] = new Chart(document.getElementById(id), {
+        type: 'bar',
+        data: { labels, datasets: ds },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: datasets.length > 1, labels: { font: { size: 11 } } },
+            tooltip: { callbacks: { label: c => { let v = c.parsed.y; if (opt.yMoney) return c.dataset.label + ': ' + money(v); return c.dataset.label + ': ' + (opt.ySuffix ? v + opt.ySuffix : v); } } }
+          },
+          scales: {
+            x: { ticks: { color: COLORS.gray }, grid: { display: false } },
+            y: { beginAtZero: true, ticks: { color: COLORS.gray, callback: v => opt.yMoney ? ('S/ ' + (v / 1000) + 'K') : (opt.ySuffix ? v + opt.ySuffix : v) }, grid: { color: COLORS.line } }
+          }
+        }
+      });
+    }
+    function drawDoughnut(id, labels, data, colors) {
+      if (charts[id]) charts[id].destroy();
+      charts[id] = new Chart(document.getElementById(id), {
+        type: 'doughnut',
+        data: { labels, datasets: [{ data, backgroundColor: colors, borderColor: '#fff', borderWidth: 3 }] },
+        options: {
+          responsive: true, maintainAspectRatio: false, cutout: '62%',
+          plugins: {
+            legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } },
+            tooltip: { callbacks: { label: c => c.label + ': ' + c.parsed + ' (' + pct(c.parsed / data.reduce((a, b) => a + b, 0)) + ')' } }
+          }
+        }
+      });
+    }
+    function drawLine(id, labels, datasets) {
+      const ds = datasets.map(d => ({ label: d.label, data: d.data, borderColor: d.color, backgroundColor: d.color + '22', fill: d.fill || false, tension: .4, pointRadius: 4, borderWidth: 2.5 }));
+      if (charts[id]) charts[id].destroy();
+      charts[id] = new Chart(document.getElementById(id), {
+        type: 'line',
+        data: { labels, datasets: ds },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { labels: { font: { size: 11 } } } },
+          scales: {
+            x: { ticks: { color: COLORS.gray }, grid: { display: false } },
+            y: { beginAtZero: true, ticks: { color: COLORS.gray }, grid: { color: COLORS.line } }
+          }
+        }
+      });
+    }
+
+    // ---------- CLIENTES ----------
+    function badgeClass(s) {
+      if (isAcept(s)) return 'aceptada'; if (isEval(s)) return 'espera'; if (isPerd(s)) return 'rechazada';
+      if (isEmi(s)) return 'emitida'; return 'contacto';
+    }
+    function estadoLabel(s) { return { '1. Contacto Inicial': 'Contacto Inicial', '2. Propuesta Enviada': 'Propuesta Enviada', '3. En Evaluación': 'En Evaluación', '4. Aceptada': 'Aceptada', '5. Rechazada/Perdida': 'Rechazada/Perdida' }[s] || s; }
+    function initials(name) { return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase(); }
+
+    function propCountInScope(id) {
+      const fe = (document.getElementById('fEstadoProp') || {}).value || '';
+      return state.data.filter(x => x.id_cliente === id && matchScope(x) && (!fe || st(x) === fe)).length;
+    }
+    function clientInScope(c) {
+      const fe = (document.getElementById('fEstadoProp') || {}).value || '';
+      return state.data.some(x => x.id_cliente === c.id_cliente && matchScope(x) && (!fe || st(x) === fe));
+    }
+    function renderClientes() {
+      const q = (document.getElementById('fCliente')?.value || '').toLowerCase();
+      const fe = document.getElementById('fEstadoProp')?.value || '';
+      let list = Object.values(clients).filter(clientInScope);
+      if (q) list = list.filter(c => c.nombre_razon_social.toLowerCase().includes(q) || c.id_cliente.toLowerCase().includes(q) || (c.nombre_contacto || '').toLowerCase().includes(q));
+      const dl = document.getElementById('clientList');
+      if (dl) dl.innerHTML = [...new Set(Object.values(clients).map(c => c.nombre_razon_social))].map(n => `<option value="${n}"></option>`).join('');
+      const body = document.getElementById('clientBody');
+      if (!list.length) { body.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink-soft)">Sin resultados.</td></tr>`; return; }
+      body.innerHTML = list.map(c => {
+        const props = state.data.filter(x => x.id_cliente === c.id_cliente && matchScope(x) && (!fe || st(x) === fe));
+        const detail = props.length ? `
+      <table class="prop-mini">
+        <colgroup>
+          <col style="width:110px">
+          <col>
+          <col style="width:130px">
+          <col style="width:125px">
+          <col style="width:105px">
+          <col style="width:105px">
+          <col style="width:160px">
+        </colgroup>
+        <thead><tr><th>Propuesta</th><th>Proyecto</th><th>Servicio</th><th>Estado</th><th>Monto</th><th>Emisión</th><th>Acciones</th></tr></thead>
+        <tbody>
+          ${props.map(p => `<tr>
+            <td class="num">${p.id_propuesta}</td>
+            <td title="${p.nombre_proyecto}">${p.nombre_proyecto}</td>
+            <td title="${shortCat(p.categoria_servicio_padre)}">${shortCat(p.categoria_servicio_padre)}</td>
+            <td><span class="badge ${badgeClass(st(p))}">${estadoLabel(st(p))}</span></td>
+            <td class="num">${money(p.monto_final_cotizado)}</td>
+            <td class="num">${p.fecha_emision_propuesta || '—'}</td>
+            <td><div class="prop-actions">
+              <button class="btn-ghost" onclick="event.stopPropagation();editProposal('${p.id_propuesta}')">Editar</button>
+              <button class="btn-ghost" onclick="event.stopPropagation();deleteProposal('${p.id_propuesta}')">Eliminar</button>
+              <button class="btn-primary" style="padding:4px 8px;font-size:11px" onclick="event.stopPropagation();generateProposalPDF('${p.id_propuesta}')">PDF</button>
+            </div></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>` : `<div class="prop-empty">Sin propuestas en el rango seleccionado.</div>`;
+        return `
+    <tr class="client-main" onclick="toggleProps('${c.id_cliente}')">
+      <td class="num"><button class="btn-toggle" id="tg-${c.id_cliente}" onclick="event.stopPropagation();toggleProps('${c.id_cliente}')" title="Mostrar/ocultar propuestas">▸</button> ${c.id_cliente}</td>
+      <td class="p-name">${c.nombre_razon_social}</td>
+      <td>${c.nombre_contacto || '—'}</td>
+      <td>${c.correo_electronico || '—'}</td>
+      <td class="num">${props.length}</td>
+      <td onclick="event.stopPropagation()">
+        <button class="btn-ghost" style="padding:5px 10px;font-size:12px" onclick="openClientModal('${c.id_cliente}')">Editar</button>
+        <button class="btn-ghost" style="padding:5px 10px;font-size:12px;border-color:var(--red);color:var(--red)" onclick="deleteClient('${c.id_cliente}')">Eliminar</button>
+      </td>
+    </tr>
+    <tr class="prop-row" id="prop-${c.id_cliente}" style="display:none"><td colspan="6">${detail}</td></tr>`;
+      }).join('');
+    }
+
+    // ---------- CLIENTES CRUD ----------
+    function populateProposalOptions(prefix) {
+      prefix = prefix || 'p';
+      const uniq = arr => [...new Set(arr.filter(Boolean))];
+      const cats = uniq(state.data.map(d => d.categoria_servicio_padre));
+      const subs = uniq(state.data.map(d => d.sub_servicio_hijo));
+      const medios = uniq(state.data.map(d => d.medio_captacion));
+      const resp = uniq(state.data.map(d => d.responsable_comercial));
+      const estados = ['1. Contacto Inicial', '2. Propuesta Enviada', '3. En Evaluación', '4. Aceptada', '5. Rechazada/Perdida'];
+      const fill = (id, vals) => { document.getElementById(prefix + id).innerHTML = vals.map(v => `<option>${v}</option>`).join(''); };
+      fill('Categoria', cats); fill('Sub', subs); fill('Medio', medios); fill('Responsable', resp); fill('Estado', estados);
+      const mot = uniq(state.data.map(d => d.motivo_perdida).filter(Boolean));
+      document.getElementById(prefix + 'Motivo').innerHTML = '<option value="">—</option>' + mot.map(m => `<option>${m}</option>`).join('');
+    }
+    function openClientModal(id) {
+      populateProposalOptions('p');
+      const modal = document.getElementById('clientModal');
+      const pResp = document.getElementById('pResponsable');
+      ['pProyecto', 'pSub', 'pMonto', 'pFechaCreacion', 'pFechaEmision', 'pFechaCierre', 'pMotivo', 'cTipo'].forEach(f => { const el = document.getElementById(f); if (el) el.value = ''; });
+      if (state.role === 'seller') { pResp.value = state.user; pResp.disabled = true; }
+      else { pResp.disabled = false; }
+      if (id) {
+        const c = clients[id];
+        document.getElementById('clientModalTitle').textContent = 'Editar cliente / añadir propuesta';
+        document.getElementById('cId').value = id;
+        document.getElementById('cRazon').value = c.nombre_razon_social;
+        document.getElementById('cContacto').value = c.nombre_contacto || '';
+        document.getElementById('cCorreo').value = c.correo_electronico || '';
+        document.getElementById('cTipo').value = c.tipo_cliente || 'Persona Jurídica';
+      } else {
+        document.getElementById('clientModalTitle').textContent = 'Nuevo cliente y propuesta';
+        document.getElementById('cId').value = '';
+        document.getElementById('cRazon').value = '';
+        document.getElementById('cContacto').value = '';
+        document.getElementById('cCorreo').value = '';
+        document.getElementById('pFechaCreacion').value = new Date().toISOString().slice(0, 10);
+      }
+      modal.style.display = 'flex';
+    }
+    function closeClientModal() { document.getElementById('clientModal').style.display = 'none'; }
+    function saveClient() {
+      const id = document.getElementById('cId').value;
+      const razon = document.getElementById('cRazon').value.trim();
+      const contacto = document.getElementById('cContacto').value.trim();
+      const correo = document.getElementById('cCorreo').value.trim();
+      const tipo = document.getElementById('cTipo').value;
+      if (!razon) { alert('La razón social es obligatoria.'); return; }
+      const proy = document.getElementById('pProyecto').value.trim();
+      if (!id && !proy) { alert('Para un nuevo cliente indica al menos el proyecto de la propuesta.'); return; }
+      let cid = id;
+      if (!cid) {
+        const ids = Object.keys(clients).map(k => parseInt((k || '').replace(/\D/g, '')) || 0);
+        cid = 'CLI-' + (Math.max(0, ...ids) + 1);
+      }
+      if (clients[cid]) {
+        const c = clients[cid];
+        c.nombre_razon_social = razon; c.nombre_contacto = contacto; c.correo_electronico = correo; c.tipo_cliente = tipo;
+        state.data.forEach(d => { if (d.id_cliente === cid) { d.nombre_razon_social = razon; d.nombre_contacto = contacto; d.correo_electronico = correo; } });
+      } else {
+        clients[cid] = { id_cliente: cid, nombre_razon_social: razon, nombre_contacto: contacto, correo_electronico: correo, tipo_cliente: tipo };
+      }
+      if (proy) {
+        const today = new Date().toISOString().slice(0, 10);
+        const monto = parseFloat(document.getElementById('pMonto').value) || 0;
+        const estado = document.getElementById('pEstado').value;
+        const pids = state.data.map(d => parseInt((d.id_propuesta || '').replace(/\D/g, '')) || 0);
+        const npid = 'PROP-' + (Math.max(0, ...pids) + 1);
+        const fc = document.getElementById('pFechaCreacion').value || today;
+        const fe = document.getElementById('pFechaEmision').value || today;
+        const fci = document.getElementById('pFechaCierre').value || '';
+        const mot = document.getElementById('pMotivo').value.trim();
+        state.data.push({
+          id_cliente: cid, nombre_razon_social: razon, nombre_contacto: contacto, correo_electronico: correo,
+          telefono: '', id_propuesta: npid, nombre_proyecto: proy,
+          medio_captacion: document.getElementById('pMedio').value,
+          monto_final_cotizado: monto,
+          categoria_servicio_padre: document.getElementById('pCategoria').value,
+          sub_servicio_hijo: document.getElementById('pSub').value,
+          responsable_comercial: state.role === 'seller' ? state.user : document.getElementById('pResponsable').value,
+          fecha_creacion_lead: fc, fecha_emision_propuesta: fe, estado_propuesta: estado,
+          fecha_cierre: fci, motivo_perdida: estado === '5. Rechazada/Perdida' ? mot : ''
+        });
+      }
+      closeClientModal();
+      saveData();
+      buildClients();
+      refreshAll();
+    }
+    function deleteClient(id) {
+      if (!confirm('¿Eliminar cliente ' + id + ' y sus propuestas asociadas?')) return;
+      delete clients[id];
+      state.data = state.data.filter(d => d.id_cliente !== id);
+      saveData();
+      refreshAll();
+    }
+    function toggleProps(id) {
+      const row = document.getElementById('prop-' + id);
+      const btn = document.getElementById('tg-' + id);
+      if (!row) return;
+      const open = row.style.display !== 'none';
+      row.style.display = open ? 'none' : 'table-row';
+      if (btn) btn.textContent = open ? '▸' : '▾';
+    }
+
+    // ---------- PROPUESTA CRUD ----------
+    function openPropModal() { document.getElementById('propModal').style.display = 'flex'; }
+    function closePropModal() { document.getElementById('propModal').style.display = 'none'; }
+    function editProposal(pid) {
+      populateProposalOptions('p2');
+      const p = state.data.find(x => x.id_propuesta === pid);
+      if (!p) return;
+      document.getElementById('pId').value = pid;
+      document.getElementById('pCid').value = p.id_cliente;
+      document.getElementById('p2Proyecto').value = p.nombre_proyecto || '';
+      document.getElementById('p2Monto').value = p.monto_final_cotizado || 0;
+      document.getElementById('p2Categoria').value = p.categoria_servicio_padre || '';
+      document.getElementById('p2Sub').value = p.sub_servicio_hijo || '';
+      document.getElementById('p2Medio').value = p.medio_captacion || '';
+      document.getElementById('p2Responsable').value = p.responsable_comercial || '';
+      document.getElementById('p2Estado').value = p.estado_propuesta || '';
+      document.getElementById('p2Motivo').value = p.motivo_perdida || '';
+      document.getElementById('p2FechaCreacion').value = p.fecha_creacion_lead || '';
+      document.getElementById('p2FechaEmision').value = p.fecha_emision_propuesta || '';
+      document.getElementById('p2FechaCierre').value = (p.fecha_cierre && p.fecha_cierre !== 'None') ? p.fecha_cierre : '';
+      openPropModal();
+    }
+    function saveProposal() {
+      const pid = document.getElementById('pId').value;
+      const proy = document.getElementById('p2Proyecto').value.trim();
+      if (!proy) { alert('El proyecto es obligatorio.'); return; }
+      const row = state.data.find(x => x.id_propuesta === pid);
+      if (!row) return;
+      row.nombre_proyecto = proy;
+      row.monto_final_cotizado = parseFloat(document.getElementById('p2Monto').value) || 0;
+      row.categoria_servicio_padre = document.getElementById('p2Categoria').value;
+      row.sub_servicio_hijo = document.getElementById('p2Sub').value;
+      row.medio_captacion = document.getElementById('p2Medio').value;
+      row.responsable_comercial = document.getElementById('p2Responsable').value;
+      row.estado_propuesta = document.getElementById('p2Estado').value;
+      row.motivo_perdida = (document.getElementById('p2Estado').value === '5. Rechazada/Perdida') ? document.getElementById('p2Motivo').value.trim() : '';
+      row.fecha_creacion_lead = document.getElementById('p2FechaCreacion').value;
+      row.fecha_emision_propuesta = document.getElementById('p2FechaEmision').value;
+      row.fecha_cierre = document.getElementById('p2FechaCierre').value || 'None';
+      const c = clients[row.id_cliente];
+      if (c) { row.nombre_razon_social = c.nombre_razon_social; row.nombre_contacto = c.nombre_contacto || ''; row.correo_electronico = c.correo_electronico || ''; }
+      closePropModal();
+      saveData();
+      refreshAll();
+    }
+    function deleteProposal(pid) {
+      if (!confirm('¿Eliminar la propuesta ' + pid + '?')) return;
+      state.data = state.data.filter(d => d.id_propuesta !== pid);
+      saveData();
+      buildClients();
+      refreshAll();
+    }
+    function generateProposalPDF(pid) {
+      const p = state.data.find(x => x.id_propuesta === pid);
+      if (!p) return;
+      const w = window.open('', '_blank');
+      if (!w) { alert('Permite las ventanas emergentes para generar el PDF.'); return; }
+      const E = PLANTILLA.empresa;
+      const cat = p.categoria_servicio_padre || '';
+      const sub = p.sub_servicio_hijo || '';
+      const servicio_nombre = shortCat(cat);
+      const servicio_nombre_detallado = sub || servicio_nombre;
+      const cliente = p.nombre_razon_social || '—';
+      const proyecto = p.nombre_proyecto || '—';
+      const fecha_emision = p.fecha_emision_propuesta || new Date().toISOString().slice(0, 10);
+      const anio = fecha_emision.slice(0, 4);
+      const correlativo = (p.id_propuesta || '').replace(/\D/g, '') || '0000';
+      const numero_propuesta = 'N° ' + correlativo + '-' + anio + '-Rev.00';
+      const costo = money(p.monto_final_cotizado);
+      const sc = serviceContent(cat, sub);
+      const li = arr => arr.map(t => '<li>' + t + '</li>').join('');
+      const consideraciones = PLANTILLA.consideraciones_fijas
+        .map(t => t.replace(/\{\{horario_semana\}\}/g, PLANTILLA.horario_semana)
+          .replace(/\{\{horario_sabado\}\}/g, PLANTILLA.horario_sabado)
+          .replace(/\{\{plazo_validez_dias\}\}/g, PLANTILLA.plazo_validez_dias)
+          .replace(/\{\{plazo_aceptacion_dias\}\}/g, PLANTILLA.plazo_aceptacion_dias))
+        .concat(sc.lista_consideraciones_especificas);
+      const inmueble = sc.isInspeccion ? `
+      <div class="section inmueble">
+        <div class="sec-title">Características del inmueble</div>
+        <ul class="bullets">
+          <li>N° DE BAÑOS: <b>${p.num_banos || '—'}</b></li>
+          <li>N° DE HABITACIONES: <b>${p.num_habitaciones || '—'}</b>${p.ambientes_extra ? ' (' + p.ambientes_extra + ')' : ''}</li>
+          <li>TIPOLOGÍA: <b>${p.tipologia || '—'}</b></li>
+          <li>ÁREA: <b>${p.area_m2 || '—'} m2</b></li>
+        </ul>
+        <div class="note-sm">(*) Fuente: Información obtenida por el cliente</div>
+      </div>` : '';
+      const header = `
+      <div class="header">
+        <div class="h-logo"><img src="${LOGO_DATA}" alt="logo"></div>
+        <div class="h-center">
+          <div class="h-title">F-${PLANTILLA.codigo_formato} PROPUESTA DE SERVICIO</div>
+          <div class="h-sub">${servicio_nombre}</div>
+        </div>
+        <div class="h-box">
+          <div class="h-box-top">${servicio_nombre_detallado}</div>
+          <div class="h-box-cli">CLIENTE: ${cliente}</div>
+        </div>
+      </div>`;
+      const footer = `<div class="footer">${E.telefonos} &nbsp;·&nbsp; ${E.correo_contacto} &nbsp;·&nbsp; ${E.direccion_oficina}</div>`;
+      const cuentaRows = E.cuentas.map(c => `<tr><td class="k">${c[0]}</td><td>${c[1]}</td></tr>`).join('');
+      const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Propuesta ${p.id_propuesta}</title>
+<style>
+  @page { size: A4; margin: 14mm 14mm 16mm 14mm; }
+  * { box-sizing: border-box; }
+  body { font-family: 'Inter', Arial, sans-serif; color: #1A2A36; font-size: 12px; margin: 0; line-height: 1.45; }
+  table.page { width: 100%; border-collapse: collapse; }
+  thead, tfoot { display: table-header-group; }
+  .header { display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #0969DA; padding-bottom: 8px; }
+  .h-logo img { height: 38px; display: block; }
+  .h-center { flex: 1; }
+  .h-title { font-weight: 800; font-size: 13px; letter-spacing: .5px; color: #0969DA; }
+  .h-sub { font-size: 12px; color: #5B6873; font-weight: 600; }
+  .h-box { background: #E5F1FC; border-radius: 6px; padding: 6px 10px; min-width: 190px; }
+  .h-box-top { font-weight: 700; font-size: 12px; color: #0B4FA3; }
+  .h-box-cli { border-top: 1px solid #0969DA; margin-top: 4px; padding-top: 4px; font-size: 11px; font-weight: 600; }
+  .footer { border-top: 1px solid #C9D4DE; margin-top: 6px; padding-top: 6px; font-size: 10px; color: #5B6873; text-align: center; }
+  .body { padding: 14px 2px; }
+  .two-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 14mm; align-items: start; }
+  .col { min-width: 0; }
+  .section, .clause, .proj, .inmueble { break-inside: avoid; }
+  .proj { display: grid; grid-template-columns: 95px 1fr; gap: 2px 8px; margin-top: 10px; }
+  .proj .lab { font-weight: 700; font-size: 10.5px; text-transform: uppercase; color: #5B6873; }
+  .proj .val { font-size: 12px; }
+  .section { margin-top: 12px; }
+  .sec-title { background: #0969DA; color: #fff; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 4px; }
+  .bullets { margin: 8px 0 0; padding-left: 18px; }
+  .bullets li { margin-bottom: 3px; }
+  .note-sm { font-size: 10px; color: #5B6873; font-style: italic; margin-top: 6px; }
+  .svc-list { margin: 8px 0 0; padding-left: 20px; }
+  .svc-list li { margin-bottom: 5px; }
+  table.prop { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  table.prop td { border: 1px solid #D4DDE6; padding: 7px 9px; vertical-align: top; }
+  table.prop td.k { background: #F1F5F9; font-weight: 700; width: 100px; text-transform: uppercase; font-size: 10.5px; color: #5B6873; }
+  .clause { margin-top: 11px; }
+  .clause h4 { font-size: 12.5px; margin: 0 0 4px; color: #0B4FA3; }
+  .clause p { margin: 0 0 6px; }
+  .page-break { page-break-before: always; }
+  table.emp { width: 100%; border-collapse: collapse; }
+  table.emp td { border: 1px solid #D4DDE6; padding: 7px 10px; }
+  table.emp td.k { background: #F1F5F9; font-weight: 700; width: 150px; text-transform: uppercase; font-size: 11px; color: #5B6873; }
+  .iso { background: #F7F9FB; border: 1px solid #D4DDE6; border-radius: 6px; padding: 12px 14px; font-size: 11.5px; }
+  .anexos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+  .anexos-grid .ph { background: #EAEFF4; border: 1px solid #D4DDE6; border-radius: 6px; height: 70px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #5B6873; }
+  .inst { margin-top: 8px; padding-left: 18px; }
+</style></head>
+<body>
+<table class="page">
+  <thead><tr><td>${header}</td></tr></thead>
+  <tbody><tr><td><div class="body">
+    <div class="two-grid">
+      <div class="col">
+        <div class="proj">
+          <div class="lab">N° de propuesta</div><div class="val">${numero_propuesta}</div>
+          <div class="lab">Fecha</div><div class="val">${fecha_emision}</div>
+          <div class="lab">Cliente</div><div class="val">${cliente}</div>
+          <div class="lab">Proyecto</div><div class="val">${proyecto}</div>
+          <div class="lab">Ubicación</div><div class="val">${p.direccion_inmueble || '—'}</div>
+          <div class="lab">Servicio</div><div class="val">${servicio_nombre}</div>
+        </div>
+        ${inmueble}
+        <div class="section">
+          <div class="sec-title">Nuestros servicios consideran</div>
+          <ul class="svc-list">${li(PLANTILLA.nuestros_servicios)}</ul>
+        </div>
+        <div class="section">
+          <table class="prop">
+            <tr><td class="k">Servicio propuesto</td><td>${servicio_nombre}</td></tr>
+            <tr><td class="k">Alcance</td><td>${sc.alcance_resumen}</td></tr>
+            <tr><td class="k">Entregable</td><td><ul class="bullets">${li(sc.entregables_lista)}</ul></td></tr>
+            <tr><td class="k">Costo del servicio (con IGV)</td><td>${costo}</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="col">
+        <div class="clause"><h4>1.1 Alcance del servicio</h4><p>Se realiza la inspección para verificar el cumplimiento técnico de lo siguiente:</p><ul class="bullets">${li(sc.lista_alcance_tecnico)}</ul></div>
+        <div class="clause"><h4>1.2 Requisitos para el inicio del desarrollo de los servicios</h4><ul class="bullets">${li(sc.lista_requisitos)}</ul></div>
+        <div class="clause"><h4>1.3 Entregable del servicio</h4><ul class="bullets">${li(sc.lista_entregables_detalle)}</ul><p>La entrega se realizará ${PLANTILLA.plazo_entrega_horas} horas posterior a culminar la inspección.</p></div>
+        <div class="clause"><h4>1.4 Costo y forma de pago</h4><ul class="bullets"><li>Propuesta de servicio: ${costo} (INC. IGV)</li><li>Forma de pago: ${PLANTILLA.condiciones_pago}</li></ul></div>
+        <div class="clause"><h4>1.5 Consideraciones del servicio</h4><ul class="bullets">${li(consideraciones)}</ul></div>
+      </div>
+    </div>
+    <div class="section page-break">
+      <div class="sec-title">Datos de la empresa</div>
+      <table class="emp">
+        <tr><td class="k">Razón social</td><td>${E.razon_social}</td></tr>
+        <tr><td class="k">RUC</td><td>${E.ruc}</td></tr>
+        <tr><td class="k">Dirección</td><td>${E.direccion}</td></tr>
+        ${cuentaRows}
+        <tr><td class="k">Correo contabilidad</td><td>${E.correo_contabilidad}</td></tr>
+      </table>
+    </div>
+    <div class="section">
+      <div class="sec-title">Comunicado ISO 37001</div>
+      <div class="iso">${PLANTILLA.iso_comunicado}<div class="note-sm">Fecha: ${fecha_emision}</div></div>
+    </div>
+    <div class="section page-break">
+      <div class="sec-title">Anexos</div>
+      <div class="anexos-grid"><div class="ph">Foto de referencia 1</div><div class="ph">Foto de referencia 2</div><div class="ph">Foto de referencia 3</div></div>
+      <div class="sec-title" style="margin-top:14px">Instrumentos de inspección</div>
+      <ul class="inst">${li(PLANTILLA.instrumentos)}</ul>
+    </div>
+  </div></td></tr></tbody>
+  <tfoot><tr><td>${footer}</td></tr></tfoot>
+</table>
+<scr` + `ipt>window.onload=function(){setTimeout(function(){window.print();},400);};</scr` + `ipt>
+</body></html>`;
+      w.document.open(); w.document.write(html); w.document.close();
+    }
+
+    // ---------- DATE RANGE ----------
+    function onRangeChange(prefix) {
+      const from = document.getElementById(prefix + 'From').value;
+      const to = document.getElementById(prefix + 'To').value;
+      document.getElementById('repFrom').value = from; document.getElementById('repTo').value = to;
+      document.getElementById('cliFrom').value = from; document.getElementById('cliTo').value = to;
+      state.from = from; state.to = to;
+      renderKPIs(); renderCharts(); renderClientes();
+    }
+    function clearRange() {
+      state.from = ''; state.to = '';
+      ['repFrom', 'repTo', 'cliFrom', 'cliTo'].forEach(i => document.getElementById(i).value = '');
+      renderKPIs(); renderCharts(); renderClientes();
+    }
+
+    function maxDataDate() {
+      return new Date().toISOString().slice(0, 10);
+    }
+    function applyPreset(type) {
+      const asOf = maxDataDate();
+      const dt = new Date(asOf + 'T00:00:00');
+      let from;
+      if (type === 'ytd') from = asOf.slice(0, 4) + '-01-01';
+      else if (type === 'mtd') from = asOf.slice(0, 7) + '-01';
+      else if (type === 'qtd') { const q = Math.floor(dt.getMonth() / 3) * 3; from = asOf.slice(0, 4) + '-' + String(q + 1).padStart(2, '0') + '-01'; }
+      document.getElementById('repFrom').value = from; document.getElementById('repTo').value = asOf;
+      document.getElementById('cliFrom').value = from; document.getElementById('cliTo').value = asOf;
+      state.from = from; state.to = asOf;
+      renderKPIs(); renderCharts(); renderClientes();
+    }
+
+    // ---------- USUARIOS (CRUD básico) ----------
+    function initUsers() {
+      if (state.users && state.users.length) return;
+      const vend = [...new Set(state.data.map(x => x.responsable_comercial))];
+      state.users = vend.map((v, i) => ({
+        id: 'USR-' + (i + 1),
+        nombre: v,
+        correo: v.toLowerCase().replace(/ /g, '.') + '@checkincasa.pe',
+        rol: i === 0 ? 'admin' : 'seller'
+      }));
+    }
+    function renderUsuarios() {
+      const note = state.role === 'seller'
+        ? `Como <b>Vendedor</b> (${state.user}) ves solo tus propias propuestas en Reportes y Clientes. El rol Admin accede a todo.`
+        : `Como <b>Administrador</b> tienes acceso total a usuarios, propuestas y clientes.`;
+      document.getElementById('usersNote').innerHTML = note;
+      const body = document.getElementById('userBody');
+      if (!state.users.length) { body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink-soft)">Sin usuarios.</td></tr>'; return; }
+      body.innerHTML = state.users.map(u => `
+    <tr>
+      <td class="num">${u.id}</td>
+      <td class="p-name">${u.nombre}</td>
+      <td>${u.correo}</td>
+      <td><span class="role-pill ${u.rol}">${u.rol === 'admin' ? 'ADMIN' : 'VENDEDOR'}</span></td>
+      <td>
+        <button class="btn-ghost" style="padding:5px 10px;font-size:12px" onclick="openUserModal('${u.id}')">Editar</button>
+        <button class="btn-ghost" style="padding:5px 10px;font-size:12px;border-color:var(--red);color:var(--red)" onclick="deleteUser('${u.id}')">Eliminar</button>
+      </td>
+    </tr>`).join('');
+    }
+    function openUserModal(id) {
+      const modal = document.getElementById('userModal');
+      if (id) {
+        const u = state.users.find(x => x.id === id);
+        document.getElementById('userModalTitle').textContent = 'Editar usuario';
+        document.getElementById('uId').value = id;
+        document.getElementById('uNombre').value = u.nombre;
+        document.getElementById('uCorreo').value = u.correo;
+        document.getElementById('uRol').value = u.rol;
+      } else {
+        document.getElementById('userModalTitle').textContent = 'Nuevo usuario';
+        document.getElementById('uId').value = '';
+        document.getElementById('uNombre').value = '';
+        document.getElementById('uCorreo').value = '';
+        document.getElementById('uRol').value = 'seller';
+      }
+      modal.style.display = 'flex';
+    }
+    function closeUserModal() { document.getElementById('userModal').style.display = 'none'; }
+    function saveUser() {
+      const id = document.getElementById('uId').value;
+      const nombre = document.getElementById('uNombre').value.trim();
+      if (!nombre) { alert('El nombre es obligatorio.'); return; }
+      const correo = document.getElementById('uCorreo').value.trim();
+      const rol = document.getElementById('uRol').value;
+      if (id) {
+        const u = state.users.find(x => x.id === id);
+        u.nombre = nombre; u.correo = correo; u.rol = rol;
+      } else {
+        const ids = state.users.map(x => parseInt((x.id || '').replace(/\D/g, '')) || 0);
+        const nid = 'USR-' + (Math.max(0, ...ids) + 1);
+        state.users.push({ id: nid, nombre, correo, rol });
+      }
+      closeUserModal();
+      renderUsuarios();
+    }
+    function deleteUser(id) {
+      if (!confirm('¿Eliminar usuario ' + id + '?')) return;
+      state.users = state.users.filter(x => x.id !== id);
+      renderUsuarios();
+    }
+
+    // ---------- NAV / ROLE ----------
+    function showView(name, btn) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('view-' + name).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      if (name === 'clientes') renderClientes();
+      if (name === 'usuarios') renderUsuarios();
+    }
+    function setRole(role) {
+      state.role = role;
+      document.getElementById('roleAdmin').classList.toggle('active', role === 'admin');
+      document.getElementById('roleSeller').classList.toggle('active', role === 'seller');
+      if (role === 'seller' && !state.user) state.user = document.getElementById('loginUser').value || state.data[0].responsable_comercial;
+      const av = role === 'admin' ? 'AD' : initials(state.user);
+      document.getElementById('sideAvatar').textContent = av;
+      document.getElementById('sideName').textContent = role === 'admin' ? 'Administrador' : state.user;
+      document.getElementById('sideRole').textContent = role === 'admin' ? 'Acceso total' : 'Vendedor';
+      renderAll();
+    }
+    function doLogin() {
+      const role = document.getElementById('loginRole').value;
+      const user = document.getElementById('loginUser').value;
+      state.role = role; state.user = role === 'seller' ? user : '';
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      initRoleUI();
+      renderAll();
+    }
+    function initRoleUI() {
+      const vend = [...new Set(state.data.map(x => x.responsable_comercial))];
+      const sel = document.getElementById('loginUser'); sel.innerHTML = vend.map(v => `<option>${v}</option>`).join('');
+      document.getElementById('loginRole').addEventListener('change', e => {
+        document.getElementById('loginUserField').style.display = e.target.value === 'seller' ? 'block' : 'none';
+      });
+    }
+    function renderAll() { renderKPIs(); renderCharts(); }
+
+    // ---------- CUSTOMIZE ----------
+    const WIDGETS = [
+      ['winvendor', 'Win Rate por Vendedor'], ['motivos', 'Motivos de Pérdida'],
+      ['ticket', 'Ticket Promedio'], ['pipeline', 'Pipeline vs Cerrados'], ['tendencia', 'Tendencia de Cierre']
+    ];
+    function toggleCustomize() {
+      const bar = document.getElementById('customizeBar');
+      if (bar.style.display === 'none') {
+        bar.style.display = 'flex';
+        bar.innerHTML = WIDGETS.map(([k, l]) => `<label><input type="checkbox" checked data-w="${k}" onchange="toggleWidget(this)"> ${l}</label>`).join('');
+      } else { bar.style.display = 'none'; }
+    }
+    function toggleWidget(cb) {
+      const w = document.querySelector(`.widget[data-w="${cb.dataset.w}"]`);
+      if (w) w.classList.toggle('hidden', !cb.checked);
+    }
+
+    // init
+    buildClients();
+    initUsers();
+    renderAll();
+  </script>
+</body>
+
+</html>
