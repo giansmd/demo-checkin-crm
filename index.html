@@ -1677,21 +1677,19 @@ function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.da
       const mcolors = ['#0969DA', '#2F7FD0', '#5C9BDD', '#8FB8E8', '#BBD4F0'];
       drawDoughnut('chartMotivos', mlabels, mvals, mcolors);
 
-      // TICKET PROMEDIO POR LÍNEA DE NEGOCIO (siglas)
-      const CAT_LINE = {
-        '14. Gestión Postventa': 'IPV',
-        '10. Inspecciones Técnicas': 'ITD',
-        '11. Supervisión': 'SUP',
-        '15. Dossier': null
-      };
-      const lineOf = c => (c in CAT_LINE) ? CAT_LINE[c] : shortCat(c);
+      // TICKET PROMEDIO POR LÍNEA DE NEGOCIO (siglas): IPV, ITD, ITAC
+      function bizLineOf(cat, sub) {
+        if (/postventa/i.test(cat || '')) return 'IPV';
+        if (/inspec/i.test(cat || '')) return /itac/i.test(sub || '') ? 'ITAC' : 'ITD';
+        return null; // Supervisión y Dossier excluidos
+      }
       const cat = {}; d.filter(x => isAcept(st(x))).forEach(x => {
-        const line = lineOf(x.categoria_servicio_padre);
-        if (!line) return; // Dossier excluido
+        const line = bizLineOf(x.categoria_servicio_padre, x.sub_servicio_hijo);
+        if (!line) return;
         if (!cat[line]) cat[line] = { s: 0, n: 0 };
         cat[line].s += +x.monto_final_cotizado || 0; cat[line].n++;
       });
-      const lineOrder = ['IPV', 'ITD', 'SUP'].filter(l => cat[l]);
+      const lineOrder = ['IPV', 'ITD', 'ITAC'].filter(l => cat[l]);
       const clabels = lineOrder.length ? lineOrder : Object.keys(cat);
       const cvals = clabels.map(c => Math.round(cat[c].s / cat[c].n));
       drawBar('chartTicket', clabels, [{ label: 'Ticket promedio (S/)', data: cvals, color: COLORS.primary }], { yMoney: true });
