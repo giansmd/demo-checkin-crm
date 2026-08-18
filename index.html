@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Check In · CRM Comercial</title>
+  <title>Check In</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
@@ -888,6 +888,7 @@
     .date-filter .df-sep {
       color: var(--line);
     }
+
     .df-preset {
       padding: 6px 10px;
       font-size: 12px;
@@ -1002,6 +1003,7 @@
       .grid-2f {
         grid-template-columns: 1fr;
       }
+
       .modal-grid {
         grid-template-columns: 1fr;
       }
@@ -1037,11 +1039,13 @@
       font-weight: 700;
       margin: 0 0 16px;
     }
+
     .modal-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 22px;
     }
+
     .modal-col {
       min-width: 0;
     }
@@ -1167,9 +1171,8 @@
       <div class="brand-mark">
         <img src="logo-checkincasa.jpeg" class="logo" alt="Check In Casa" style="width: 100%; height: 100%;">
       </div>
-      <div class="name">Check In · CRM <span>Comercial</span></div>
+      <div class="name">CheckIn Casa</div>
       <h1>Bienvenido</h1>
-      <p class="sub">Demo de gestión de propuestas con indicadores comerciales.</p>
       <div class="field">
         <label>Correo</label>
         <input type="email" value="demo@checkincasa.pe">
@@ -1190,7 +1193,6 @@
         <select id="loginUser"></select>
       </div>
       <button class="login-btn" onclick="doLogin()">Iniciar sesión</button>
-      <p class="login-note">Vista de demostración — datos embebidos (100 propuestas).</p>
     </div>
   </div>
 
@@ -1199,7 +1201,7 @@
     <div class="shell">
       <aside class="sidebar">
         <div class="side-brand"><img src="logo-checkincasa.jpeg" class="logo" alt="Check In Casa">
-          <div class="name">Check In<span>CRM Comercial</span></div>
+          <div class="name">Check In</div>
         </div>
         <nav class="side-nav">
           <div class="side-section">Módulos</div>
@@ -1306,10 +1308,12 @@
               <h2>Clientes</h2>
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <input id="fCliente" type="text" list="clientList" placeholder="Buscar cliente…" onkeyup="renderClientes()"
+              <input id="fCliente" type="text" list="clientList" placeholder="Buscar cliente…"
+                onkeyup="renderClientes()"
                 style="padding:9px 12px;border:1px solid var(--line);border-radius:7px;font-size:13px;font-family:'Inter'">
               <datalist id="clientList"></datalist>
-              <select id="fEstadoProp" onchange="renderClientes()" style="padding:9px 12px;border:1px solid var(--line);border-radius:7px;font-size:13px;font-family:'Inter';background:var(--surface)">
+              <select id="fEstadoProp" onchange="renderClientes()"
+                style="padding:9px 12px;border:1px solid var(--line);border-radius:7px;font-size:13px;font-family:'Inter';background:var(--surface)">
                 <option value="">Todos los estados</option>
                 <option value="1. Contacto Inicial">1. Contacto Inicial</option>
                 <option value="2. Propuesta Enviada">2. Propuesta Enviada</option>
@@ -1338,7 +1342,7 @@
                 <th>ID</th>
                 <th>Razón Social</th>
                 <th>Contacto</th>
-                <th>Correo</th>
+                <th>Celular</th>
                 <th>Propuestas</th>
                 <th>Acciones</th>
               </tr>
@@ -1354,36 +1358,81 @@
             <input type="hidden" id="cId">
             <div class="form-sep">Datos del cliente</div>
             <div class="grid-2f">
-              <div class="field" style="margin-bottom:0"><label>Razón Social *</label><input id="cRazon" placeholder="Edificaciones Modernas 9"></div>
-              <div class="field" style="margin-bottom:0"><label>Tipo de cliente</label><select id="cTipo"><option value="Persona Natural">Persona Natural</option><option value="Persona Jurídica">Persona Jurídica</option></select></div>
+              <div class="field" style="margin-bottom:0"><label>Razón Social *</label><input id="cRazon"
+                  placeholder="Edificaciones Modernas 9"></div>
+              <div class="field" style="margin-bottom:0"><label>Tipo de cliente</label><select id="cTipo">
+                  <option value="Persona Natural">Persona Natural</option>
+                  <option value="Persona Jurídica">Persona Jurídica</option>
+                </select></div>
             </div>
             <div class="grid-2f">
-              <div class="field" style="margin-bottom:0"><label>Nombre de contacto</label><input id="cContacto" placeholder="Andrea Montes"></div>
-              <div class="field" style="margin-bottom:0"><label>Correo electrónico</label><input id="cCorreo" placeholder="contacto@empresa.com"></div>
+              <div class="field" style="margin-bottom:0"><label>Nombre de contacto</label><input id="cContacto"
+                  placeholder="Andrea Montes"></div>
+              <div class="field" style="margin-bottom:0"><label>Número de celular</label><input id="cCelular"
+                  placeholder="987 654 321"></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Correo electrónico (opcional)</label><input id="cCorreo"
+                  placeholder="contacto@empresa.com"></div>
+              <div></div>
+            </div>
+            <div class="form-sep">Características del inmueble</div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Dirección departamento</label><input id="cDireccion"
+                  placeholder="Av. Los Álamos 320, Dpto 501"></div>
+              <div class="field" style="margin-bottom:0"><label>Tipología</label><input id="cTipologia"
+                  placeholder="Ej. Flat"></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Nro baños</label><input id="cBanos" type="number"
+                  placeholder="2"></div>
+              <div class="field" style="margin-bottom:0"><label>Nro habitaciones</label><input id="cHabitaciones"
+                  type="number" placeholder="3"></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Nro depósitos</label><input id="cDepositos" type="number"
+                  placeholder="1"></div>
+              <div class="field" style="margin-bottom:0"><label>Nro cocheras</label><input id="cCocheras" type="number"
+                  placeholder="1"></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Área (m2)</label><input id="cArea" type="number"
+                  placeholder="95"></div>
+              <div></div>
             </div>
             <div class="form-sep">Datos de la propuesta</div>
             <div class="grid-2f">
-              <div class="field" style="margin-bottom:0"><label>Proyecto *</label><input id="pProyecto" placeholder="Residencial San Borja"></div>
-              <div class="field" style="margin-bottom:0"><label>Monto (S/)</label><input id="pMonto" type="number" placeholder="5000"></div>
+              <div class="field" style="margin-bottom:0"><label>Proyecto *</label><input id="pProyecto"
+                  placeholder="Residencial San Borja"></div>
+              <div class="field" style="margin-bottom:0"><label>Monto (S/)</label><input id="pMonto" type="number"
+                  placeholder="5000"></div>
             </div>
             <div class="grid-2f">
-              <div class="field" style="margin-bottom:0"><label>Categoría servicio</label><select id="pCategoria" onchange="filterSubOptions('p')"></select></div>
+              <div class="field" style="margin-bottom:0"><label>Categoría servicio</label><select id="pCategoria"
+                  onchange="filterSubOptions('p')"></select></div>
               <div class="field" style="margin-bottom:0"><label>Sub-servicio</label><select id="pSub"></select></div>
             </div>
             <div class="grid-2f">
-              <div class="field" style="margin-bottom:0"><label>Medio captación</label><select id="pMedio"></select></div>
-              <div class="field" style="margin-bottom:0"><label>Responsable comercial</label><select id="pResponsable"></select></div>
+              <div class="field" style="margin-bottom:0"><label>Medio captación</label><select id="pMedio"></select>
+              </div>
+              <div class="field" style="margin-bottom:0"><label>Responsable comercial</label><select
+                  id="pResponsable"></select></div>
             </div>
             <div class="grid-2f">
               <div class="field" style="margin-bottom:0"><label>Estado</label><select id="pEstado"></select></div>
-              <div class="field" style="margin-bottom:0"><label>Motivo pérdida</label><select id="pMotivo"><option value="">—</option></select></div>
+              <div class="field" style="margin-bottom:0"><label>Motivo pérdida</label><select id="pMotivo">
+                  <option value="">—</option>
+                </select></div>
             </div>
             <div class="grid-2f">
-              <div class="field" style="margin-bottom:0"><label>Fecha creación</label><input id="pFechaCreacion" type="date"></div>
-              <div class="field" style="margin-bottom:0"><label>Fecha emisión</label><input id="pFechaEmision" type="date"></div>
+              <div class="field" style="margin-bottom:0"><label>Fecha creación</label><input id="pFechaCreacion"
+                  type="date"></div>
+              <div class="field" style="margin-bottom:0"><label>Fecha emisión</label><input id="pFechaEmision"
+                  type="date"></div>
             </div>
             <div class="grid-2f">
-              <div class="field" style="margin-bottom:0"><label>Fecha cierre</label><input id="pFechaCierre" type="date"></div>
+              <div class="field" style="margin-bottom:0"><label>Fecha cierre</label><input id="pFechaCierre"
+                  type="date"></div>
               <div></div>
             </div>
             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px">
@@ -1401,27 +1450,61 @@
             <input type="hidden" id="pCid">
             <div class="form-sep">Propuesta</div>
             <div class="grid-2f">
-              <div class="field" style="margin-bottom:0"><label>Proyecto *</label><input id="p2Proyecto" placeholder="Residencial San Borja"></div>
-              <div class="field" style="margin-bottom:0"><label>Monto (S/)</label><input id="p2Monto" type="number" placeholder="5000"></div>
+              <div class="field" style="margin-bottom:0"><label>Proyecto *</label><input id="p2Proyecto"
+                  placeholder="Residencial San Borja"></div>
+              <div class="field" style="margin-bottom:0"><label>Monto (S/)</label><input id="p2Monto" type="number"
+                  placeholder="5000"></div>
             </div>
             <div class="grid-2f">
-              <div class="field" style="margin-bottom:0"><label>Categoría servicio</label><select id="p2Categoria" onchange="filterSubOptions('p2')"></select></div>
+              <div class="field" style="margin-bottom:0"><label>Categoría servicio</label><select id="p2Categoria"
+                  onchange="filterSubOptions('p2')"></select></div>
               <div class="field" style="margin-bottom:0"><label>Sub-servicio</label><select id="p2Sub"></select></div>
             </div>
             <div class="grid-2f">
-              <div class="field" style="margin-bottom:0"><label>Medio captación</label><select id="p2Medio"></select></div>
-              <div class="field" style="margin-bottom:0"><label>Responsable comercial</label><select id="p2Responsable"></select></div>
+              <div class="field" style="margin-bottom:0"><label>Medio captación</label><select id="p2Medio"></select>
+              </div>
+              <div class="field" style="margin-bottom:0"><label>Responsable comercial</label><select
+                  id="p2Responsable"></select></div>
             </div>
             <div class="grid-2f">
               <div class="field" style="margin-bottom:0"><label>Estado</label><select id="p2Estado"></select></div>
-              <div class="field" style="margin-bottom:0"><label>Motivo pérdida</label><select id="p2Motivo"><option value="">—</option></select></div>
+              <div class="field" style="margin-bottom:0"><label>Motivo pérdida</label><select id="p2Motivo">
+                  <option value="">—</option>
+                </select></div>
             </div>
             <div class="grid-2f">
-              <div class="field" style="margin-bottom:0"><label>Fecha creación</label><input id="p2FechaCreacion" type="date"></div>
-              <div class="field" style="margin-bottom:0"><label>Fecha emisión</label><input id="p2FechaEmision" type="date"></div>
+              <div class="field" style="margin-bottom:0"><label>Fecha creación</label><input id="p2FechaCreacion"
+                  type="date"></div>
+              <div class="field" style="margin-bottom:0"><label>Fecha emisión</label><input id="p2FechaEmision"
+                  type="date"></div>
             </div>
             <div class="grid-2f">
-              <div class="field" style="margin-bottom:0"><label>Fecha cierre</label><input id="p2FechaCierre" type="date"></div>
+              <div class="field" style="margin-bottom:0"><label>Fecha cierre</label><input id="p2FechaCierre"
+                  type="date"></div>
+              <div></div>
+            </div>
+            <div class="form-sep">Características del inmueble</div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Dirección departamento</label><input id="p2Direccion"
+                  placeholder="Av. Los Álamos 320, Dpto 501"></div>
+              <div class="field" style="margin-bottom:0"><label>Tipología</label><input id="p2Tipologia"
+                  placeholder="Ej. Flat"></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Nro baños</label><input id="p2Banos" type="number"
+                  placeholder="2"></div>
+              <div class="field" style="margin-bottom:0"><label>Nro habitaciones</label><input id="p2Habitaciones"
+                  type="number" placeholder="3"></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Nro depósitos</label><input id="p2Depositos" type="number"
+                  placeholder="1"></div>
+              <div class="field" style="margin-bottom:0"><label>Nro cocheras</label><input id="p2Cocheras" type="number"
+                  placeholder="1"></div>
+            </div>
+            <div class="grid-2f">
+              <div class="field" style="margin-bottom:0"><label>Área (m2)</label><input id="p2Area" type="number"
+                  placeholder="95"></div>
               <div></div>
             </div>
             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px">
@@ -1463,8 +1546,12 @@
             <h3 id="userModalTitle">Nuevo usuario</h3>
             <input type="hidden" id="uId">
             <div class="field"><label>Nombre *</label><input id="uNombre" placeholder="Kelli Livora"></div>
-            <div class="field"><label>Correo electrónico</label><input id="uCorreo" placeholder="nombre@checkincasa.pe"></div>
-            <div class="field"><label>Rol</label><select id="uRol"><option value="admin">Administrador</option><option value="seller">Vendedor</option></select></div>
+            <div class="field"><label>Correo electrónico</label><input id="uCorreo" placeholder="nombre@checkincasa.pe">
+            </div>
+            <div class="field"><label>Rol</label><select id="uRol">
+                <option value="admin">Administrador</option>
+                <option value="seller">Vendedor</option>
+              </select></div>
             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px">
               <button class="btn-ghost" onclick="closeUserModal()">Cancelar</button>
               <button class="btn-primary" onclick="saveUser()">Guardar</button>
@@ -1481,11 +1568,11 @@
 
     // ---------- STATE ----------
     const LS_KEY = 'checkin_crm_v1';
-function loadData() {
-  try { const s = localStorage.getItem(LS_KEY); if (s) { const a = JSON.parse(s); if (Array.isArray(a) && a.length) return a; } } catch (e) {}
-  return DATA.slice();
-}
-function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.data)); } catch (e) {} }
+    function loadData() {
+      try { const s = localStorage.getItem(LS_KEY); if (s) { const a = JSON.parse(s); if (Array.isArray(a) && a.length) return a; } } catch (e) { }
+      return DATA.slice();
+    }
+    function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.data)); } catch (e) { } }
     let state = { role: 'admin', user: '', data: loadData(), users: [], from: '', to: '' };
     const COLORS = { primary: '#0969DA', primaryLight: '#3B82C4', primaryLighter: '#9DC0E8', primarySoft: '#C7DEF7', green: '#1A7F37', red: '#C0392B', gray: '#5B6873', ink: '#1A2A36', line: '#E2E8F0' };
     const charts = {};
@@ -1590,7 +1677,7 @@ function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.da
       clients = {};
       state.data.forEach(d => {
         if (!clients[d.id_cliente]) {
-          clients[d.id_cliente] = { id_cliente: d.id_cliente, nombre_razon_social: d.nombre_razon_social, nombre_contacto: d.nombre_contacto, correo_electronico: d.correo_electronico };
+          clients[d.id_cliente] = { id_cliente: d.id_cliente, nombre_razon_social: d.nombre_razon_social, nombre_contacto: d.nombre_contacto, telefono: d.telefono, correo_electronico: d.correo_electronico, direccion_departamento: d.direccion_departamento, tipologia: d.tipologia, nro_banos: d.nro_banos, nro_habitaciones: d.nro_habitaciones, nro_depositos: d.nro_depositos, nro_cocheras: d.nro_cocheras, area_m2: d.area_m2 };
         }
       });
     }
@@ -1838,7 +1925,7 @@ function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.da
       <td class="num"><button class="btn-toggle" id="tg-${c.id_cliente}" onclick="event.stopPropagation();toggleProps('${c.id_cliente}')" title="Mostrar/ocultar propuestas">▸</button> ${c.id_cliente}</td>
       <td class="p-name">${c.nombre_razon_social}</td>
       <td>${c.nombre_contacto || '—'}</td>
-      <td>${c.correo_electronico || '—'}</td>
+      <td>${c.telefono || '—'}</td>
       <td class="num">${props.length}</td>
       <td onclick="event.stopPropagation()">
         <button class="btn-ghost" style="padding:5px 10px;font-size:12px" onclick="openClientModal('${c.id_cliente}')">Editar</button>
@@ -1882,7 +1969,7 @@ function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.da
       populateProposalOptions('p');
       const modal = document.getElementById('clientModal');
       const pResp = document.getElementById('pResponsable');
-      ['pProyecto', 'pSub', 'pMonto', 'pFechaCreacion', 'pFechaEmision', 'pFechaCierre', 'pMotivo', 'cTipo'].forEach(f => { const el = document.getElementById(f); if (el) el.value = ''; });
+      ['pProyecto', 'pSub', 'pMonto', 'pFechaCreacion', 'pFechaEmision', 'pFechaCierre', 'pMotivo', 'cTipo', 'cCorreo', 'cDireccion', 'cTipologia', 'cBanos', 'cHabitaciones', 'cDepositos', 'cCocheras', 'cArea'].forEach(f => { const el = document.getElementById(f); if (el) el.value = ''; });
       if (state.role === 'seller') { pResp.value = state.user; pResp.disabled = true; }
       else { pResp.disabled = false; }
       if (id) {
@@ -1891,14 +1978,22 @@ function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.da
         document.getElementById('cId').value = id;
         document.getElementById('cRazon').value = c.nombre_razon_social;
         document.getElementById('cContacto').value = c.nombre_contacto || '';
+        document.getElementById('cCelular').value = c.telefono || '';
         document.getElementById('cCorreo').value = c.correo_electronico || '';
+        document.getElementById('cDireccion').value = c.direccion_departamento || '';
+        document.getElementById('cTipologia').value = c.tipologia || '';
+        document.getElementById('cBanos').value = c.nro_banos || '';
+        document.getElementById('cHabitaciones').value = c.nro_habitaciones || '';
+        document.getElementById('cDepositos').value = c.nro_depositos || '';
+        document.getElementById('cCocheras').value = c.nro_cocheras || '';
+        document.getElementById('cArea').value = c.area_m2 || '';
         document.getElementById('cTipo').value = c.tipo_cliente || 'Persona Jurídica';
       } else {
         document.getElementById('clientModalTitle').textContent = 'Nuevo cliente y propuesta';
         document.getElementById('cId').value = '';
         document.getElementById('cRazon').value = '';
         document.getElementById('cContacto').value = '';
-        document.getElementById('cCorreo').value = '';
+        document.getElementById('cCelular').value = '';
         document.getElementById('pFechaCreacion').value = new Date().toISOString().slice(0, 10);
       }
       modal.style.display = 'flex';
@@ -1908,7 +2003,15 @@ function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.da
       const id = document.getElementById('cId').value;
       const razon = document.getElementById('cRazon').value.trim();
       const contacto = document.getElementById('cContacto').value.trim();
+      const celular = document.getElementById('cCelular').value.trim();
       const correo = document.getElementById('cCorreo').value.trim();
+      const direccion = document.getElementById('cDireccion').value.trim();
+      const tipologia = document.getElementById('cTipologia').value.trim();
+      const banos = document.getElementById('cBanos').value.trim();
+      const habitaciones = document.getElementById('cHabitaciones').value.trim();
+      const depositos = document.getElementById('cDepositos').value.trim();
+      const cocheras = document.getElementById('cCocheras').value.trim();
+      const area = document.getElementById('cArea').value.trim();
       const tipo = document.getElementById('cTipo').value;
       if (!razon) { alert('La razón social es obligatoria.'); return; }
       const proy = document.getElementById('pProyecto').value.trim();
@@ -1920,10 +2023,11 @@ function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.da
       }
       if (clients[cid]) {
         const c = clients[cid];
-        c.nombre_razon_social = razon; c.nombre_contacto = contacto; c.correo_electronico = correo; c.tipo_cliente = tipo;
-        state.data.forEach(d => { if (d.id_cliente === cid) { d.nombre_razon_social = razon; d.nombre_contacto = contacto; d.correo_electronico = correo; } });
+        c.nombre_razon_social = razon; c.nombre_contacto = contacto; c.telefono = celular; c.correo_electronico = correo; c.tipo_cliente = tipo;
+        c.direccion_departamento = direccion; c.tipologia = tipologia; c.nro_banos = banos; c.nro_habitaciones = habitaciones; c.nro_depositos = depositos; c.nro_cocheras = cocheras; c.area_m2 = area;
+        state.data.forEach(d => { if (d.id_cliente === cid) { d.nombre_razon_social = razon; d.nombre_contacto = contacto; d.telefono = celular; d.correo_electronico = correo; d.direccion_departamento = direccion; d.tipologia = tipologia; d.nro_banos = banos; d.nro_habitaciones = habitaciones; d.nro_depositos = depositos; d.nro_cocheras = cocheras; d.area_m2 = area; } });
       } else {
-        clients[cid] = { id_cliente: cid, nombre_razon_social: razon, nombre_contacto: contacto, correo_electronico: correo, tipo_cliente: tipo };
+        clients[cid] = { id_cliente: cid, nombre_razon_social: razon, nombre_contacto: contacto, telefono: celular, correo_electronico: correo, tipo_cliente: tipo, direccion_departamento: direccion, tipologia: tipologia, nro_banos: banos, nro_habitaciones: habitaciones, nro_depositos: depositos, nro_cocheras: cocheras, area_m2: area };
       }
       if (proy) {
         const today = new Date().toISOString().slice(0, 10);
@@ -1936,8 +2040,9 @@ function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.da
         const fci = document.getElementById('pFechaCierre').value || '';
         const mot = document.getElementById('pMotivo').value.trim();
         state.data.push({
-          id_cliente: cid, nombre_razon_social: razon, nombre_contacto: contacto, correo_electronico: correo,
-          telefono: '', id_propuesta: npid, nombre_proyecto: proy,
+          id_cliente: cid, nombre_razon_social: razon, nombre_contacto: contacto, telefono: celular, correo_electronico: correo,
+          direccion_departamento: direccion, tipologia: tipologia, nro_banos: banos, nro_habitaciones: habitaciones, nro_depositos: depositos, nro_cocheras: cocheras, area_m2: area,
+          id_propuesta: npid, nombre_proyecto: proy,
           medio_captacion: document.getElementById('pMedio').value,
           monto_final_cotizado: monto,
           categoria_servicio_padre: document.getElementById('pCategoria').value,
@@ -1989,6 +2094,13 @@ function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.da
       document.getElementById('p2FechaCreacion').value = p.fecha_creacion_lead || '';
       document.getElementById('p2FechaEmision').value = p.fecha_emision_propuesta || '';
       document.getElementById('p2FechaCierre').value = (p.fecha_cierre && p.fecha_cierre !== 'None') ? p.fecha_cierre : '';
+      document.getElementById('p2Direccion').value = p.direccion_departamento || '';
+      document.getElementById('p2Tipologia').value = p.tipologia || '';
+      document.getElementById('p2Banos').value = p.nro_banos || '';
+      document.getElementById('p2Habitaciones').value = p.nro_habitaciones || '';
+      document.getElementById('p2Depositos').value = p.nro_depositos || '';
+      document.getElementById('p2Cocheras').value = p.nro_cocheras || '';
+      document.getElementById('p2Area').value = p.area_m2 || '';
       openPropModal();
     }
     function saveProposal() {
@@ -2008,8 +2120,15 @@ function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.da
       row.fecha_creacion_lead = document.getElementById('p2FechaCreacion').value;
       row.fecha_emision_propuesta = document.getElementById('p2FechaEmision').value;
       row.fecha_cierre = document.getElementById('p2FechaCierre').value || 'None';
+      row.direccion_departamento = document.getElementById('p2Direccion').value.trim();
+      row.tipologia = document.getElementById('p2Tipologia').value.trim();
+      row.nro_banos = document.getElementById('p2Banos').value.trim();
+      row.nro_habitaciones = document.getElementById('p2Habitaciones').value.trim();
+      row.nro_depositos = document.getElementById('p2Depositos').value.trim();
+      row.nro_cocheras = document.getElementById('p2Cocheras').value.trim();
+      row.area_m2 = document.getElementById('p2Area').value.trim();
       const c = clients[row.id_cliente];
-      if (c) { row.nombre_razon_social = c.nombre_razon_social; row.nombre_contacto = c.nombre_contacto || ''; row.correo_electronico = c.correo_electronico || ''; }
+      if (c) { row.nombre_razon_social = c.nombre_razon_social; row.nombre_contacto = c.nombre_contacto || ''; row.telefono = c.telefono || ''; row.correo_electronico = c.correo_electronico || ''; }
       closePropModal();
       saveData();
       refreshAll();
@@ -2050,8 +2169,10 @@ function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.da
       <div class="section inmueble">
         <div class="sec-title">Características del inmueble</div>
         <ul class="bullets">
-          <li>N° DE BAÑOS: <b>${p.num_banos || '—'}</b></li>
-          <li>N° DE HABITACIONES: <b>${p.num_habitaciones || '—'}</b>${p.ambientes_extra ? ' (' + p.ambientes_extra + ')' : ''}</li>
+          <li>N° DE BAÑOS: <b>${p.nro_banos || '—'}</b></li>
+          <li>N° DE HABITACIONES: <b>${p.nro_habitaciones || '—'}</b>${p.ambientes_extra ? ' (' + p.ambientes_extra + ')' : ''}</li>
+          <li>N° DE DEPÓSITOS: <b>${p.nro_depositos || '—'}</b></li>
+          <li>N° DE COCHERAS: <b>${p.nro_cocheras || '—'}</b></li>
           <li>TIPOLOGÍA: <b>${p.tipologia || '—'}</b></li>
           <li>ÁREA: <b>${p.area_m2 || '—'} m2</b></li>
         </ul>
@@ -2127,7 +2248,7 @@ function saveData() { try { localStorage.setItem(LS_KEY, JSON.stringify(state.da
           <div class="lab">Fecha</div><div class="val">${fecha_emision}</div>
           <div class="lab">Cliente</div><div class="val">${cliente}</div>
           <div class="lab">Proyecto</div><div class="val">${proyecto}</div>
-          <div class="lab">Ubicación</div><div class="val">${p.direccion_inmueble || '—'}</div>
+          <div class="lab">Ubicación</div><div class="val">${p.direccion_departamento || '—'}</div>
           <div class="lab">Servicio</div><div class="val">${servicio_nombre}</div>
         </div>
         ${inmueble}
